@@ -2,14 +2,10 @@ import Config
 
 # Configure your database
 config :tex, Tex.Repo,
-  username: "postgres",
-  password: "123456",
-  hostname: "localhost",
-  database: "tex_dev",
+  database: Path.expand("../priv/data/tex_dev.db", Path.dirname(__ENV__.file)),
+  pool_size: 5,
   stacktrace: true,
-  show_sensitive_data_on_connection_error: true,
-  pool_size: 10,
-  log: false
+  show_sensitive_data_on_connection_error: true
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
@@ -17,7 +13,7 @@ config :tex, Tex.Repo,
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
-config :tex_web, TexWeb.Endpoint,
+config :tex, TexWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
   http: [ip: {127, 0, 0, 1}, port: 4000],
@@ -26,8 +22,8 @@ config :tex_web, TexWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "XNlHq9zFp2ZMqh/OyJg2B2vhSD7xOiLmowj9AeaD8v7lZv47Gr8poPFQnrK6Kdiu",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
+    esbuild: {Esbuild, :install_and_run, [:tex, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:tex, ~w(--watch)]}
   ]
 
 # ## SSL Support
@@ -54,23 +50,26 @@ config :tex_web, TexWeb.Endpoint,
 # different ports.
 
 # Watch static and templates for browser reloading.
-config :tex_web, TexWeb.Endpoint,
+config :tex, TexWeb.Endpoint,
   live_reload: [
     patterns: [
-      ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"lib/tex_web/(controllers|live|components)/.*(ex|heex)$"
     ]
   ]
 
 # Enable dev routes for dashboard and mailbox
-config :tex_web, dev_routes: true
+config :tex, dev_routes: true
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
 
-# Initialize plugs at runtime for faster development compilation
-config :phoenix, :plug_init_mode, :runtime
-
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
 config :phoenix, :stacktrace_depth, 20
+
+# Initialize plugs at runtime for faster development compilation
+config :phoenix, :plug_init_mode, :runtime
+
+# Include HEEx debug annotations as HTML comments in rendered markup
+config :phoenix_live_view, :debug_heex_annotations, true
