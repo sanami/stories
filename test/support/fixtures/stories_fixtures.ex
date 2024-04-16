@@ -55,4 +55,20 @@ defmodule Tex.StoriesFixtures do
 
     story
   end
+
+  @doc """
+  Generate a document.
+  """
+  def document_fixture(attrs \\ %{}) do
+    {:ok, document} =
+      attrs
+      |> Enum.into(%{
+        author: "some author",
+        body: "some body",
+        title: "some title"
+      })
+      |> Tex.Stories.create_document()
+
+    document
+  end
 end

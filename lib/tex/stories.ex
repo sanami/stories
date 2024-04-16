@@ -3,7 +3,7 @@ defmodule Tex.Stories do
   require Logger
 
   alias Tex.Repo
-  alias Tex.Stories.{StoryCategory, StoryAuthor, Story}
+  alias Tex.Stories.{StoryCategory, StoryAuthor, Story, Document}
 
   def count(module) do
     Repo.aggregate(module, :count)
@@ -84,12 +84,12 @@ defmodule Tex.Stories do
       order_by(q, {^sort_dir, ^sort})
     end
 
-#    q = if query && String.length(query) > 2 do
-#      # PHRASETO_TSQUERY
-#      from s in q, where: fragment("TO_TSVECTOR('russian', story_body) @@ PLAINTO_TSQUERY('russian', ?)", ^query)
-#    else
-#      q
-#    end
+    q = if query && String.length(query) > 2 do
+      sq = from d in Document, where: fragment("documents MATCH ?", ^query), select: d.story_id
+      from s in q, where: s.id in subquery(sq)
+    else
+      q
+    end
 
     q
   end
@@ -123,5 +123,53 @@ defmodule Tex.Stories do
   def set_story_categories(story, {:ids, cat_ids}) do
     entries = Enum.map cat_ids, & %{story_id: story.id, story_category_id: &1}
     Repo.insert_all "stories_categories_join", entries
+  end
+
+  def list_documents do
+    Repo.all(Document)
+  end
+
+  def get_document!(id), do: Repo.get!(Document, id)
+
+  def create_document(story = %Story{}) do
+    attrs = %{story_id: story.id, title: story.title, body: story.story_body}
+
+    %Document{}
+    |> Document.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def create_documents do
+    Repo.transaction fn ->
+      Story
+      |> Repo.stream
+      |> Enum.each(fn story->
+        IO.puts story.id
+        create_document(story)
+      end)
+    end, timeout: :infinity
+  end
+
+  def update_document(%Document{} = document, attrs) do
+    document
+    |> Document.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_document(%Document{} = document) do
+    Repo.delete(document)
+  end
+
+  def change_document(%Document{} = document, attrs \\ %{}) do
+    Document.changeset(document, attrs)
+  end
+
+  def search_documents(query) do
+    from(Document,
+      select: [:story_id, :title, :rank],
+      where: fragment("documents MATCH ?", ^query),
+      order_by: [asc: :rank]
+    )
+    |> Repo.all()
   end
 end
