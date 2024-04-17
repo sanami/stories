@@ -2,6 +2,7 @@ defmodule Tex.StoriesTest do
   use Tex.DataCase
 
   alias Tex.Stories
+  alias Tex.Stories.Document
 
   describe "story_categories" do
     alias Tex.Stories.StoryCategory
@@ -100,7 +101,8 @@ defmodule Tex.StoriesTest do
     test "create_story/1 with valid data creates a story" do
       valid_attrs = %{story_date: ~D[2023-07-04], story_excerpt: "some story_excerpt", story_body: "some story_body", rating: 1, rating_count: 2, title: "some title", uid: 42}
 
-      assert {:ok, %Story{} = story} = Stories.create_story(valid_attrs)
+      {:ok, story} = Stories.create_story(valid_attrs)
+
       assert story.story_date == ~D[2023-07-04]
       assert story.story_excerpt == "some story_excerpt"
       assert story.story_body == "some story_body"
@@ -108,10 +110,15 @@ defmodule Tex.StoriesTest do
       assert story.rating_count == 2
       assert story.title == "some title"
       assert story.uid == 42
+
+      story_id = story.id
+      [%{story_id: ^story_id}] = Repo.all(Document)
+
+      assert File.exists?(Stories.story_file(story))
     end
 
     test "create_story/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Stories.create_story(@invalid_attrs)
+      assert {:error, :story, %Ecto.Changeset{}, _} = Stories.create_story(@invalid_attrs)
     end
 
     test "set_story_categories" do
@@ -136,11 +143,11 @@ defmodule Tex.StoriesTest do
       pp s1
       assert s1.story_body == nil
 
-      s2 = Stories.load_story_body(s1)1
+      s2 = Stories.load_story_body(s1)
       refute s2.story_body == nil
 
       s3 = Stories.load_story_body(%Story{id: nil})
-      assert s3.story_body == nil
+      assert s3.story_body == :not_found
     end
   end
 

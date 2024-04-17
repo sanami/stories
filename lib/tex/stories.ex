@@ -94,40 +94,60 @@ defmodule Tex.Stories do
     q
   end
 
-  def get_story!(id), do: Repo.get!(Story, id)
-
-  def create_story(attrs \\ %{}) do
-    res =
-      %Story{}
-      |> Story.changeset(attrs)
-      |> Repo.insert()
-
-    with {:ok, story} <- res do
-      File.write!(story_file(story), story.story_body)
-      create_document(story)
-    end
-
-    res
+  def get_story!(id) do
+    Story |> Repo.get!(id) |> load_story_body()
   end
 
-  defp story_file(story) do
+  def create_story(attrs \\ %{}) do
+    story = Story.changeset(%Story{}, attrs)
+
+    res =
+      Ecto.Multi.new
+      |> Ecto.Multi.insert(:story, story)
+      |> Ecto.Multi.run(:file, fn _repo, %{story: story} -> save_story_body(story) end)
+      |> Ecto.Multi.insert(:document, fn %{story: story} -> build_document(story) end)
+      |> Repo.transaction
+
+    with {:ok, %{story: story}} <- res do
+      {:ok, story}
+    else
+      err ->
+        Logger.error(inspect(err))
+        err
+    end
+  end
+
+  def build_document(story = %Story{}) do
+    attrs = %{story_id: story.id, title: story.title, body: story.story_body}
+    Document.changeset(%Document{}, attrs)
+  end
+
+  def story_file(story) do
     folder = Application.get_env(:tex, :story_storage, "priv/data/stories")
     File.mkdir_p!(folder)
     Path.join(folder, "#{story.id}.html")
   end
 
+  def save_story_body(story) do
+    file = story_file(story)
+    with :ok <- File.write(file, story.story_body) do
+      {:ok, file}
+    end
+  end
+
   def load_story_body(story) do
-    with {:ok, story_body} <- File.read(story_file(story)) do
+    file = story_file(story)
+
+    with {:ok, story_body} <- File.read(file) do
       %{story | story_body: story_body}
     else
-      _ -> story
+      _ -> %{story | story_body: :not_found}
     end
   end
 
   def set_favorite(id) do
     story = Repo.get!(Story, id)
     favorited_at = if story.favorited_at, do: nil, else: DateTime.now!("Etc/UTC") |> DateTime.truncate(:second)
-    # Logger.debug "favorited_at = #{favorited_at}"
 
     story
     |> Story.set_favorite(favorited_at)
@@ -145,53 +165,5 @@ defmodule Tex.Stories do
   def set_story_categories(story, {:ids, cat_ids}) do
     entries = Enum.map cat_ids, & %{story_id: story.id, story_category_id: &1}
     Repo.insert_all "stories_categories_join", entries
-  end
-
-  def list_documents do
-    Repo.all(Document)
-  end
-
-  def get_document!(id), do: Repo.get!(Document, id)
-
-  def create_document(story = %Story{}) do
-    attrs = %{story_id: story.id, title: story.title, body: story.story_body}
-
-    %Document{}
-    |> Document.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  def create_documents do
-    Repo.transaction fn ->
-      Story
-      |> Repo.stream
-      |> Enum.each(fn story->
-        IO.puts story.id
-        create_document(story)
-      end)
-    end, timeout: :infinity
-  end
-
-  def update_document(%Document{} = document, attrs) do
-    document
-    |> Document.changeset(attrs)
-    |> Repo.update()
-  end
-
-  def delete_document(%Document{} = document) do
-    Repo.delete(document)
-  end
-
-  def change_document(%Document{} = document, attrs \\ %{}) do
-    Document.changeset(document, attrs)
-  end
-
-  def search_documents(query) do
-    from(Document,
-      select: [:story_id, :title, :rank],
-      where: fragment("documents MATCH ?", ^query),
-      order_by: [asc: :rank]
-    )
-    |> Repo.all()
   end
 end

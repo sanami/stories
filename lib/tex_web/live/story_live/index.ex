@@ -38,7 +38,7 @@ defmodule TexWeb.StoryLive.Index do
 
   # Live actions
   defp apply_action(socket, :show, %{"story_id" => story_id}) do
-    story = Stories.get_story!(story_id) |> Stories.load_story_body
+    story = Stories.get_story!(story_id)
 
     socket
     |> assign(:page_title, story.title)
