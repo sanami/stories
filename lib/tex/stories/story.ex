@@ -7,7 +7,7 @@ defmodule Tex.Stories.Story do
   schema "stories" do
     field :story_date, :date
     field :story_excerpt, :string
-    field :story_body, :string
+    field :story_body, :string, virtual: true
     field :rating, :float
     field :rating_count, :integer
     field :title, :string
@@ -25,5 +25,9 @@ defmodule Tex.Stories.Story do
     story
     |> cast(attrs, [:uid, :title, :story_date, :story_excerpt, :story_body, :rating, :rating_count, :story_author_id, :favorited_at])
     |> validate_required([:uid, :title, :story_date, :story_excerpt, :story_body])
+  end
+
+  def set_favorite(story, favorited_at) do
+    change(story, favorited_at: favorited_at)
   end
 end

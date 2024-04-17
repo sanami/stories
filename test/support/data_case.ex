@@ -24,6 +24,8 @@ defmodule Tex.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import Tex.DataCase
+
+      def pp(exp), do: IO.inspect(exp)
     end
   end
 

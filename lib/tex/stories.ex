@@ -97,18 +97,40 @@ defmodule Tex.Stories do
   def get_story!(id), do: Repo.get!(Story, id)
 
   def create_story(attrs \\ %{}) do
-    %Story{}
-    |> Story.changeset(attrs)
-    |> Repo.insert()
+    res =
+      %Story{}
+      |> Story.changeset(attrs)
+      |> Repo.insert()
+
+    with {:ok, story} <- res do
+      File.write!(story_file(story), story.story_body)
+      create_document(story)
+    end
+
+    res
+  end
+
+  defp story_file(story) do
+    folder = Application.get_env(:tex, :story_storage, "priv/data/stories")
+    File.mkdir_p!(folder)
+    Path.join(folder, "#{story.id}.html")
+  end
+
+  def load_story_body(story) do
+    with {:ok, story_body} <- File.read(story_file(story)) do
+      %{story | story_body: story_body}
+    else
+      _ -> story
+    end
   end
 
   def set_favorite(id) do
     story = Repo.get!(Story, id)
-    favorited_at = if story.favorited_at, do: nil, else: DateTime.now!("Etc/UTC")
+    favorited_at = if story.favorited_at, do: nil, else: DateTime.now!("Etc/UTC") |> DateTime.truncate(:second)
     # Logger.debug "favorited_at = #{favorited_at}"
 
     story
-    |> Story.changeset(%{favorited_at: favorited_at})
+    |> Story.set_favorite(favorited_at)
     |> Repo.update!
   end
 

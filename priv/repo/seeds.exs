@@ -17,4 +17,4 @@ Tex.Stories.Loader.load_categories("priv/data/story_categories.bsondump")
 Tex.Stories.Loader.load_authors("priv/data/story_authors.bsondump")
 Tex.Stories.Loader.load_stories("priv/data/stories.bsondump")
 
-Logger.configure lev
+Logger.configure level: lev

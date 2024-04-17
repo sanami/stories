@@ -130,6 +130,18 @@ defmodule Tex.StoriesTest do
       cats11 = Repo.all(assoc(story11, :story_categories))
       IO.inspect Enum.sort(cats11) == Enum.sort([cat1, cat2])
     end
+
+    test "load_story_body" do
+      s1 = Repo.reload(story_fixture())
+      pp s1
+      assert s1.story_body == nil
+
+      s2 = Stories.load_story_body(s1)1
+      refute s2.story_body == nil
+
+      s3 = Stories.load_story_body(%Story{id: nil})
+      assert s3.story_body == nil
+    end
   end
 
   describe "documents" do
