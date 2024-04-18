@@ -1,13 +1,12 @@
 defmodule Tex.StoriesTest do
   use Tex.DataCase
+  import Tex.StoriesFixtures
 
   alias Tex.Stories
-  alias Tex.Stories.Document
+  alias Tex.Stories.{Story, Document}
 
   describe "story_categories" do
     alias Tex.Stories.StoryCategory
-
-    import Tex.StoriesFixtures
 
     @invalid_attrs %{name: nil, uid: nil}
 
@@ -52,8 +51,6 @@ defmodule Tex.StoriesTest do
   describe "story_authors" do
     alias Tex.Stories.StoryAuthor
 
-    import Tex.StoriesFixtures
-
     @invalid_attrs %{name: nil, uid: nil}
 
     test "list_story_authors/0 returns all story_authors" do
@@ -81,9 +78,6 @@ defmodule Tex.StoriesTest do
   end
 
   describe "stories" do
-    alias Tex.Stories.Story
-
-    import Tex.StoriesFixtures
 
     @invalid_attrs %{story_date: nil, story_excerpt: nil, rating: nil, title: nil, uid: nil}
 
@@ -121,6 +115,20 @@ defmodule Tex.StoriesTest do
       assert {:error, :story, %Ecto.Changeset{}, _} = Stories.create_story(@invalid_attrs)
     end
 
+    test "delete_story" do
+      s1 = story_fixture() |> Repo.preload(:document)
+      d1 = s1.document
+      pp s1
+      pp d1
+      {:ok, res} = Stories.delete_story(s1)
+      pp res
+
+      refute Repo.get(Story, s1.id)
+      refute Repo.get(Document, d1.id)
+      assert Stories.count(Story) == 0
+      assert Stories.count(Document) == 0
+    end
+
     test "set_story_categories" do
       cat1 = story_category_fixture(%{name: "cat1", uid: 1, oid: "1"})
       cat2 = story_category_fixture(%{name: "cat2", uid: 2, oid: "2"})
@@ -151,61 +159,16 @@ defmodule Tex.StoriesTest do
     end
   end
 
-  describe "documents" do
-    alias Tex.Stories.Document
+  test "build_document" do
+    s1 = story_fixture() |> Repo.preload(:document)
+    doc1 = Stories.build_document(s1)
+    refute doc1.valid?
+    assert doc1.errors[:story_id]
 
-    import Tex.StoriesFixtures
+    Repo.delete!(s1.document)
+    s1 = Stories.get_story!(s1.id)
 
-    @invalid_attrs %{title: nil, author: nil, body: nil}
-
-    test "list_documents/0 returns all documents" do
-      document = document_fixture()
-      assert Stories.list_documents() == [document]
-    end
-
-    test "get_document!/1 returns the document with given id" do
-      document = document_fixture()
-      assert Stories.get_document!(document.id) == document
-    end
-
-    test "create_document/1 with valid data creates a document" do
-      valid_attrs = %{title: "some title", author: "some author", body: "some body"}
-
-      assert {:ok, %Document{} = document} = Stories.create_document(valid_attrs)
-      assert document.title == "some title"
-      assert document.author == "some author"
-      assert document.body == "some body"
-    end
-
-    test "create_document/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Stories.create_document(@invalid_attrs)
-    end
-
-    test "update_document/2 with valid data updates the document" do
-      document = document_fixture()
-      update_attrs = %{title: "some updated title", author: "some updated author", body: "some updated body"}
-
-      assert {:ok, %Document{} = document} = Stories.update_document(document, update_attrs)
-      assert document.title == "some updated title"
-      assert document.author == "some updated author"
-      assert document.body == "some updated body"
-    end
-
-    test "update_document/2 with invalid data returns error changeset" do
-      document = document_fixture()
-      assert {:error, %Ecto.Changeset{}} = Stories.update_document(document, @invalid_attrs)
-      assert document == Stories.get_document!(document.id)
-    end
-
-    test "delete_document/1 deletes the document" do
-      document = document_fixture()
-      assert {:ok, %Document{}} = Stories.delete_document(document)
-      assert_raise Ecto.NoResultsError, fn -> Stories.get_document!(document.id) end
-    end
-
-    test "change_document/1 returns a document changeset" do
-      document = document_fixture()
-      assert %Ecto.Changeset{} = Stories.change_document(document)
-    end
+    doc1 = Stories.build_document(s1)
+    assert doc1.valid?
   end
 end

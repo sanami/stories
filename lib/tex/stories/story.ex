@@ -16,6 +16,7 @@ defmodule Tex.Stories.Story do
 
     belongs_to :story_author, Stories.StoryAuthor
     many_to_many :story_categories, Stories.StoryCategory, join_through: "stories_categories_join", unique: true
+    has_one :document, Stories.Document
 
     timestamps(type: :utc_datetime)
   end

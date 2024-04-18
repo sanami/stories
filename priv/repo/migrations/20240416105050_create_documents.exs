@@ -6,7 +6,7 @@ defmodule Tex.Repo.Migrations.CreateDocuments do
       CREATE VIRTUAL TABLE documents USING fts5(
         updated_at UNINDEXED,
         inserted_at UNINDEXED,
-        story_id,
+        story_id UNINDEXED,
         title,
         author,
         body

@@ -3,12 +3,14 @@ defmodule Tex.Stories do
   require Logger
 
   alias Tex.Repo
+  alias Ecto.Multi
   alias Tex.Stories.{StoryCategory, StoryAuthor, Story, Document}
 
   def count(module) do
     Repo.aggregate(module, :count)
   end
 
+  # Category
   def list_story_categories do
     Repo.all(StoryCategory)
   end
@@ -25,6 +27,7 @@ defmodule Tex.Stories do
     |> Repo.insert()
   end
 
+  # Author
   def list_story_authors do
     Repo.all(StoryAuthor)
   end
@@ -37,6 +40,7 @@ defmodule Tex.Stories do
     |> Repo.insert()
   end
 
+  # Story
   def list_stories(args \\ %{}, is_favorites \\ false) do
     query = args["query"]
     author_id = args["author_id"]
@@ -102,10 +106,10 @@ defmodule Tex.Stories do
     story = Story.changeset(%Story{}, attrs)
 
     res =
-      Ecto.Multi.new
-      |> Ecto.Multi.insert(:story, story)
-      |> Ecto.Multi.run(:file, fn _repo, %{story: story} -> save_story_body(story) end)
-      |> Ecto.Multi.insert(:document, fn %{story: story} -> build_document(story) end)
+      Multi.new
+      |> Multi.insert(:story, story)
+      |> Multi.run(:file, fn _repo, %{story: story} -> save_story_body(story) end)
+      |> Multi.insert(:document, fn %{story: story} -> build_document(story) end)
       |> Repo.transaction
 
     with {:ok, %{story: story}} <- res do
@@ -117,9 +121,13 @@ defmodule Tex.Stories do
     end
   end
 
-  def build_document(story = %Story{}) do
-    attrs = %{story_id: story.id, title: story.title, body: story.story_body}
-    Document.changeset(%Document{}, attrs)
+  def delete_story(%Story{} = story) do
+    docs = from(Document, where: [story_id: ^story.id])
+
+    Multi.new
+    |> Multi.delete_all(:document, docs)
+    |> Multi.delete(:story, story)
+    |> Repo.transaction
   end
 
   def story_file(story) do
@@ -165,5 +173,11 @@ defmodule Tex.Stories do
   def set_story_categories(story, {:ids, cat_ids}) do
     entries = Enum.map cat_ids, & %{story_id: story.id, story_category_id: &1}
     Repo.insert_all "stories_categories_join", entries
+  end
+
+  # Document
+  def build_document(story = %Story{}) do
+    attrs = %{story_id: story.id, title: story.title, body: story.story_body}
+    Document.changeset(%Document{}, attrs)
   end
 end
