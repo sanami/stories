@@ -11,7 +11,7 @@ defmodule Tex.StoriesFixtures do
     {:ok, story_category} =
       attrs
       |> Enum.into(%{
-        name: "cat1",
+        name: "cat 1",
         uid: 42,
         oid: "42"
       })
@@ -27,7 +27,7 @@ defmodule Tex.StoriesFixtures do
     {:ok, story_author} =
       attrs
       |> Enum.into(%{
-        name: "story1",
+        name: "author 1",
         uid: 42,
         oid: "42"
       })
@@ -44,31 +44,15 @@ defmodule Tex.StoriesFixtures do
       attrs
       |> Enum.into(%{
         story_date: ~D[2023-07-04],
-        story_excerpt: "some story_excerpt",
-        story_body: "some story_body",
+        story_excerpt: "story excerpt",
+        story_body: "story body",
         rating: 1,
         rating_count: 2,
-        title: "some title",
+        title: "story title",
         uid: 42
       })
       |> Tex.Stories.create_story()
 
     story
-  end
-
-  @doc """
-  Generate a document.
-  """
-  def document_fixture(attrs \\ %{}) do
-    {:ok, document} =
-      attrs
-      |> Enum.into(%{
-        author: "some author",
-        body: "some body",
-        title: "some title"
-      })
-      |> Tex.Stories.create_document()
-
-    document
   end
 end
