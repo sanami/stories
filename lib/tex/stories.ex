@@ -42,7 +42,7 @@ defmodule Tex.Stories do
 
   # Story
   def list_stories(args \\ %{}, is_favorites \\ false) do
-#    query = args["query"]
+    query = args["query"]
     author_id = args["author_id"]
     cat_ids = args["cat_ids"]
     rating = args["rating"]
@@ -88,12 +88,12 @@ defmodule Tex.Stories do
       order_by(q, {^sort_dir, ^sort})
     end
 
-#    q = if query && String.length(query) > 2 do
-#      sq = from d in Document, where: fragment("documents MATCH ?", ^query), select: d.story_id
-#      from s in q, where: s.id in subquery(sq)
-#    else
-#      q
-#    end
+    q = if query && String.length(query) > 2 do
+      sq = search_stories(query)
+      from s in q, where: s.id in subquery(sq)
+    else
+      q
+    end
 
     q
   end
@@ -178,5 +178,11 @@ defmodule Tex.Stories do
       order_by: [asc: :rank]
     )
     |> Repo.all
+  end
+
+  def search_stories(query) do
+    from ss in StorySearch,
+      where: fragment("story_search MATCH ?", ^query),
+      select: ss.id
   end
 end
