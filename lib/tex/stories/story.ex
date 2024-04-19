@@ -16,7 +16,6 @@ defmodule Tex.Stories.Story do
 
     belongs_to :story_author, Stories.StoryAuthor
     many_to_many :story_categories, Stories.StoryCategory, join_through: "stories_categories_join", unique: true
-    has_one :document, Stories.Document
 
     timestamps(type: :utc_datetime)
   end
@@ -24,7 +23,7 @@ defmodule Tex.Stories.Story do
   @doc false
   def changeset(story, attrs) do
     story
-    |> cast(attrs, [:uid, :title, :story_date, :story_excerpt, :story_body, :rating, :rating_count, :story_author_id, :favorited_at])
+    |> cast(attrs, [:id, :uid, :title, :story_date, :story_excerpt, :story_body, :rating, :rating_count, :story_author_id, :favorited_at])
     |> validate_required([:uid, :title, :story_date, :story_excerpt, :story_body])
   end
 

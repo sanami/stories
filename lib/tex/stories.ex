@@ -4,7 +4,7 @@ defmodule Tex.Stories do
 
   alias Tex.Repo
   alias Ecto.Multi
-  alias Tex.Stories.{StoryCategory, StoryAuthor, Story, Document}
+  alias Tex.Stories.{Story, StoryCategory, StoryAuthor, StorySearch}
 
   def count(module) do
     Repo.aggregate(module, :count)
@@ -42,7 +42,7 @@ defmodule Tex.Stories do
 
   # Story
   def list_stories(args \\ %{}, is_favorites \\ false) do
-    query = args["query"]
+#    query = args["query"]
     author_id = args["author_id"]
     cat_ids = args["cat_ids"]
     rating = args["rating"]
@@ -88,12 +88,12 @@ defmodule Tex.Stories do
       order_by(q, {^sort_dir, ^sort})
     end
 
-    q = if query && String.length(query) > 2 do
-      sq = from d in Document, where: fragment("documents MATCH ?", ^query), select: d.story_id
-      from s in q, where: s.id in subquery(sq)
-    else
-      q
-    end
+#    q = if query && String.length(query) > 2 do
+#      sq = from d in Document, where: fragment("documents MATCH ?", ^query), select: d.story_id
+#      from s in q, where: s.id in subquery(sq)
+#    else
+#      q
+#    end
 
     q
   end
@@ -109,7 +109,7 @@ defmodule Tex.Stories do
       Multi.new
       |> Multi.insert(:story, story)
       |> Multi.run(:file, fn _repo, %{story: story} -> save_story_body(story) end)
-      |> Multi.insert(:document, fn %{story: story} -> build_document(story) end)
+      |> Multi.insert(:story_search, fn %{story: story} -> StorySearch.changeset(story) end)
       |> Repo.transaction
 
     with {:ok, %{story: story}} <- res do
@@ -122,12 +122,7 @@ defmodule Tex.Stories do
   end
 
   def delete_story(%Story{} = story) do
-    docs = from(Document, where: [story_id: ^story.id])
-
-    Multi.new
-    |> Multi.delete_all(:document, docs)
-    |> Multi.delete(:story, story)
-    |> Repo.transaction
+    Repo.delete(story)
   end
 
   def story_file(story) do
@@ -175,9 +170,13 @@ defmodule Tex.Stories do
     Repo.insert_all "stories_categories_join", entries
   end
 
-  # Document
-  def build_document(story = %Story{}) do
-    attrs = %{story_id: story.id, title: story.title, body: story.story_body}
-    Document.changeset(%Document{}, attrs)
+  # Search
+  def search(query) do
+    from(StorySearch,
+      select: [:title, :rank, :id],
+      where: fragment("story_search MATCH ?", ^query),
+      order_by: [asc: :rank]
+    )
+    |> Repo.all
   end
 end

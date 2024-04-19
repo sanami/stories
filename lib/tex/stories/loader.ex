@@ -38,7 +38,9 @@ defmodule Tex.Stories.Loader do
   def load_stories(bd_file) do
     {category_by_oid, author_by_oid} = cache_data()
 
-    parse_bsondump bd_file, fn obj, _i ->
+    parse_bsondump bd_file, fn obj, i ->
+      if rem(i, 1000) == 0, do: IO.puts(i)
+
       attrs = %{
         story_date: obj[:story_date][:"$date"],
         story_excerpt: obj[:story_excerpt],
@@ -59,8 +61,8 @@ defmodule Tex.Stories.Loader do
           cat_ids = Enum.map cat_oids, & category_by_oid[&1].id
 
           Stories.set_story_categories(story, {:ids, cat_ids})
-        {:error, cs} ->
-          Logger.error(cs.errors)
+        err ->
+          Logger.error(inspect(err))
       end
     end
   end

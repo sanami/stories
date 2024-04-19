@@ -3,7 +3,7 @@ defmodule Tex.StoriesTest do
   import Tex.StoriesFixtures
 
   alias Tex.Stories
-  alias Tex.Stories.{Story, Document}
+  alias Tex.Stories.{Story, StorySearch}
 
   describe "story_categories" do
     alias Tex.Stories.StoryCategory
@@ -78,13 +78,14 @@ defmodule Tex.StoriesTest do
   end
 
   describe "stories" do
-
     @invalid_attrs %{story_date: nil, story_excerpt: nil, rating: nil, title: nil, uid: nil}
 
     test "list_stories/0 returns all stories" do
-      story = story_fixture()
+      story_fixture(%{uid1: 1})
+      story_fixture(%{uid1: 2})
+
       res = Stories.list_stories |> Repo.all
-      assert res == [story]
+      assert length(res) == 2
     end
 
     test "get_story!/1 returns the story with given id" do
@@ -105,9 +106,6 @@ defmodule Tex.StoriesTest do
       assert story.title == "some title"
       assert story.uid == 42
 
-      story_id = story.id
-      [%{story_id: ^story_id}] = Repo.all(Document)
-
       assert File.exists?(Stories.story_file(story))
     end
 
@@ -116,17 +114,12 @@ defmodule Tex.StoriesTest do
     end
 
     test "delete_story" do
-      s1 = story_fixture() |> Repo.preload(:document)
-      d1 = s1.document
-      pp s1
-      pp d1
-      {:ok, res} = Stories.delete_story(s1)
-      pp res
+      s1 = story_fixture()
+      Stories.delete_story(s1)
 
       refute Repo.get(Story, s1.id)
-      refute Repo.get(Document, d1.id)
       assert Stories.count(Story) == 0
-      assert Stories.count(Document) == 0
+      assert Stories.count(StorySearch) == 0
     end
 
     test "set_story_categories" do
@@ -157,18 +150,38 @@ defmodule Tex.StoriesTest do
       s3 = Stories.load_story_body(%Story{id: nil})
       assert s3.story_body == :not_found
     end
-  end
 
-  test "build_document" do
-    s1 = story_fixture() |> Repo.preload(:document)
-    doc1 = Stories.build_document(s1)
-    refute doc1.valid?
-    assert doc1.errors[:story_id]
+    test "story_fixture" do
+      s1 = story_fixture(%{id: 11})
+      s1 = Repo.reload(s1)
+      pp s1
+      assert s1.id == 11
 
-    Repo.delete!(s1.document)
-    s1 = Stories.get_story!(s1.id)
+      # search
+      ss1 = Repo.get!(StorySearch, s1.id)
+      pp ss1
+      assert ss1.title == s1.title
 
-    doc1 = Stories.build_document(s1)
-    assert doc1.valid?
+      # dup id
+      assert_raise Ecto.ConstraintError, fn -> story_fixture(%{id: 11}) end
+    end
+
+    test "search" do
+      s1 = story_fixture(%{id: 11})
+      pp Repo.all(Story)
+      pp Repo.all(StorySearch)
+
+      # search
+      res = Stories.search("story title")
+      pp res
+      assert length(res) == 1
+
+      assert length(Stories.search("story+body")) == 1
+
+      # delete
+      Repo.delete s1
+      assert Repo.all(Story) == []
+      assert Repo.all(StorySearch) == []
+    end
   end
 end
