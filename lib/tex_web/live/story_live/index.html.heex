@@ -1,6 +1,6 @@
 <div class="flex">
   <div class="flex-0 w-5/12 px-4 bg-base-200">
-    <.pagination page={@page} path={& ~p"/story?#{Map.put(@filter_params, "page", &1)}"} phx-hook="PageNav" id="top-page" class="my-4"/>
+    <.pagination page={@page} />
 
     <div id="stories" phx-update="stream">
       <%= for {dom_id, story} <- @streams.stories do %>
@@ -28,7 +28,7 @@
       <% end %>
     </div>
 
-    <.pagination page={@page} path={& ~p"/story?#{Map.put(@filter_params, "page", &1)}" } class="mb-4"/>
+    <.pagination page={@page} class="mb-4"/>
   </div>
 
   <div class="flex-1 w-7/12 p-4">

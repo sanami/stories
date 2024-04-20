@@ -19,7 +19,6 @@ defmodule TexWeb.StoryLive.Index do
   @impl true
   def handle_params(params, uri, socket) do
     Logger.debug "---handle_params #{socket.assigns[:live_action]} #{inspect params} #{uri} #{socket.id} #{inspect self()}"
-
     {:noreply, apply_action(socket, socket.assigns[:live_action], params)}
   end
 
@@ -34,6 +33,7 @@ defmodule TexWeb.StoryLive.Index do
       Stories.set_favorite(id)
       |> Repo.preload([:story_author, :story_categories])
     socket = stream_insert(socket, :stories, story)
+
     {:noreply, socket}
   end
 
@@ -45,6 +45,14 @@ defmodule TexWeb.StoryLive.Index do
       socket
       |> assign(:filter_params, filter_params)
       |> set_story(filter_params)
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("set_page", %{"page" => page}, socket) do
+    filter_params = Map.merge(socket.assigns[:filter_params], %{"page" => page})
+    socket = set_stories(socket, filter_params)
 
     {:noreply, socket}
   end
@@ -93,11 +101,6 @@ defmodule TexWeb.StoryLive.Index do
     |> assign(author: author, page: page, filter_params: filter_params, filter_form: to_form(filter_params))
   end
 
-  # Helpers
-  def favorite?(story) do
-    !!story.favorited_at
-  end
-
   defp set_story(socket, params) do
     if params["story_id"] do
       story = Stories.get_story!(params["story_id"])
@@ -110,5 +113,10 @@ defmodule TexWeb.StoryLive.Index do
       |> assign(:story, nil)
       |> assign(:page_title, nil)
     end
+  end
+
+  # Helpers
+  def favorite?(story) do
+    !!story.favorited_at
   end
 end

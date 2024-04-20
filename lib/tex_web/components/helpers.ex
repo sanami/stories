@@ -10,8 +10,7 @@ defmodule TexWeb.Components.Helpers do
   def story_filter_form(assigns)
 
   attr :page, :map, required: true
-  attr :path, :any
-  attr :rest, :global, default: %{}
+  attr :rest, :global, default: %{class: "my-4"}
   def pagination(assigns)
 
   attr :story, :map

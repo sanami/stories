@@ -1,25 +1,15 @@
-<div :if={@page.total_entries > 0} {Map.delete(@rest, :class)} class={"text-center #{@rest[:class]}"}>
-  <div class="inline-flex items-center justify-center gap-3 w-auto">
-    <.link
-      patch={if @page.page_number > 1, do: @path.(@page.page_number - 1)}
-      class="page-prev inline-flex h-8 w-8 items-center justify-center rounded border"
-    >
-      <span class="sr-only">Next Page</span>
+<div :if={@page.total_entries > 0} {Map.delete(@rest, :class)} class={"flex justify-center #{@rest[:class]}"}>
+  <div class="join">
+    <button class="join-item btn btn-sm" phx-click="set_page" phx-value-page={@page.page_number - 1}>
       <span class="hero-chevron-left-mini"/>
-    </.link>
-
-    <p class="text-xs">
+    </button>
+    <button class="join-item btn btn-sm -btn-disabled">
       <%= @page.page_number %>
       <span class="mx-0.25">/</span>
       <%= @page.total_pages %>
-    </p>
-
-    <.link
-      patch={if @page.page_number < @page.total_pages, do: @path.(@page.page_number + 1)}
-      class="page-next inline-flex h-8 w-8 items-center justify-center rounded border"
-    >
-      <span class="sr-only">Next Page</span>
+    </button>
+    <button class="join-item btn btn-sm" phx-click="set_page" phx-value-page={@page.page_number + 1}>
       <span class="hero-chevron-right-mini"/>
-    </.link>
+    </button>
   </div>
 </div>
