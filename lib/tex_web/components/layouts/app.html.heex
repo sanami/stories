@@ -1,35 +1,43 @@
-<header class="bg-white">
-  <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-    <div class="flex h-16 items-center justify-between">
-      <div class="md:flex md:items-center md:gap-12">
-        <a href="/" class="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
-          <.icon name="hero-book-open" class="h-8 w-8"/>
-          <span class="ml-3 text-xl">phx</span>
-        </a>
-      </div>
+<div class="flex">
 
-      <div class="hidden md:block">
-        <nav aria-label="Global">
-          <ul class="flex items-center gap-6 text-sm">
-            <li>
-              <.link class={"mr-5 hover:text-gray-900 #{ if assigns[:live_action] == :index, do: "font-bold" }"} patch={~p"/story"}>Рассказы</.link>
-            </li>
-            <li>
-              <.link class={"mr-5 hover:text-gray-900 #{ if assigns[:live_action] == :favorites, do: "font-bold" }"} patch={~p"/story/favorites"}>Избранное</.link>
-            </li>
-          </ul>
-        </nav>
-      </div>
+<aside class="flex-none space-y-4 w-72 py-6 px-4 bg-base-200">
+  <!-- Logo -->
+  <a class="btn btn-ghost">
+    <.icon name="hero-book-open" class="h-8 w-8"/>
+    Stories
+  </a>
 
-      <div class="flex items-center gap-4">
-      </div>
+
+  <!-- Links -->
+  <ul class="menu p-0">
+    <li>
+      <.link class={"#{ if assigns[:live_action] == :index, do: "active" }"} patch={~p"/story"}>Рассказы</.link>
+    </li>
+    <li>
+      <.link class={"#{ if assigns[:live_action] == :favorites, do: "active" }"} patch={~p"/story/favorites"}>Избранное</.link>
+    </li>
+  </ul>
+
+  <div class="divider"></div>
+
+  <!-- Bottom menu -->
+  <div>
+    <.story_filter_form :if={assigns[:filter_form]} filter_form={@filter_form} author={@author} story_categories={@story_categories} page={@page}/>
+  </div>
+
+  <div class="divider"></div>
+
+  <input type="checkbox" value="dark" class="toggle theme-controller"/>
+
+</aside>
+
+<div class="flex-1">
+  <main class="px-4 py-4">
+    <div class="mx-auto max-w-4xl">
+      <.flash_group flash={@flash} />
+      <%= @inner_content %>
     </div>
-  </div>
-</header>
+  </main>
+</div>
 
-<main class="px-4 py-4">
-  <div class="mx-auto max-w-4xl">
-    <.flash_group flash={@flash} />
-    <%= @inner_content %>
-  </div>
-</main>
+</div>

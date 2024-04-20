@@ -1,5 +1,6 @@
 defmodule TexWeb.StoryLive.Index do
   use TexWeb, :live_view
+  import TexWeb.Components.Helpers
   alias Tex.{Repo, Stories}
   require Logger
 

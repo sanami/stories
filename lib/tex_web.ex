@@ -84,7 +84,6 @@ defmodule TexWeb do
       import Phoenix.HTML
       # Core UI components and translation
       import TexWeb.CoreComponents
-      import TexWeb.Components.Helpers
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
