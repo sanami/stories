@@ -37,13 +37,24 @@ defmodule TexWeb.StoryLive.Index do
     {:noreply, socket}
   end
 
-  # Live actions
-  defp apply_action(socket, :show, %{"story_id" => story_id}) do
-    story = Stories.get_story!(story_id)
+  @impl true
+  def handle_event("set_story", %{"id" => story_id}, socket) do
+    filter_params = Map.merge(socket.assigns[:filter_params], %{"story_id" => story_id})
 
+    socket =
+      socket
+      |> assign(:filter_params, filter_params)
+      |> set_story(filter_params)
+
+    {:noreply, socket}
+  end
+
+  # Live actions
+  defp apply_action(socket, :index, params) do
     socket
-    |> assign(:page_title, story.title)
-    |> assign(:story, story)
+    |> assign(:page_title, "Рассказы")
+    |> assign(story: nil, is_favorites: false)
+    |> set_stories(params)
   end
 
   defp apply_action(socket, :favorites, params) do
@@ -53,20 +64,13 @@ defmodule TexWeb.StoryLive.Index do
     |> set_stories(params)
   end
 
-  defp apply_action(socket, :index, params) do
-    socket
-    |> assign(:page_title, "Рассказы")
-    |> assign(story: nil, is_favorites: false)
-    |> set_stories(params)
-  end
-
   defp set_stories(socket, params, stream \\ true) do
     Logger.debug "---set_stories #{inspect params}"
 
     is_favorites = socket.assigns[:is_favorites]
     filter_params =
       params
-      |> Map.take(~w[query author_id cat_ids rating page page_size sort sort_dir])
+      |> Map.take(~w[query author_id cat_ids rating page page_size sort sort_dir story_id])
       |> Map.filter(fn {_key, val} -> val && val != "" && val != [] end)
 
     page =
@@ -84,6 +88,7 @@ defmodule TexWeb.StoryLive.Index do
       end
 
     socket
+    |> set_story(filter_params)
     |> stream(:stories, stories, reset: true)
     |> assign(author: author, page: page, filter_params: filter_params, filter_form: to_form(filter_params))
   end
@@ -91,5 +96,19 @@ defmodule TexWeb.StoryLive.Index do
   # Helpers
   def favorite?(story) do
     !!story.favorited_at
+  end
+
+  defp set_story(socket, params) do
+    if params["story_id"] do
+      story = Stories.get_story!(params["story_id"])
+
+      socket
+      |> assign(:story, story)
+      |> assign(:page_title, story.title)
+    else
+      socket
+      |> assign(:story, nil)
+      |> assign(:page_title, nil)
+    end
   end
 end

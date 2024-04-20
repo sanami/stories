@@ -21,7 +21,6 @@ defmodule TexWeb.Router do
 
     live "/story", StoryLive.Index, :index
     live "/story/favorites", StoryLive.Index, :favorites
-    live "/story/:story_id", StoryLive.Index, :show
   end
 
   # Other scopes may use custom stacks.

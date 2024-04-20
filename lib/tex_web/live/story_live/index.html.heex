@@ -1,38 +1,40 @@
-<.pagination page={@page} path={& ~p"/story?#{Map.put(@filter_params, "page", &1)}"} phx-hook="PageNav" id="top-page" class="my-4"/>
+<div class="flex">
+  <div class="flex-0 w-5/12 px-4 bg-base-200">
+    <.pagination page={@page} path={& ~p"/story?#{Map.put(@filter_params, "page", &1)}"} phx-hook="PageNav" id="top-page" class="my-4"/>
 
-<div id="stories" phx-update="stream">
-  <%= for {dom_id, story} <- @streams.stories do %>
-    <div id={dom_id} class="py-4 flex flex-wrap md:flex-nowrap">
-      <div class="md:w-64 md:mb-0 mb-6 mr-4 flex-shrink-0 flex flex-col">
-        <span class="font-semibold">
-          <%= story.story_categories |> Enum.map(& &1.name) |> Enum.sort |> Enum.join(", ") %>
-        </span>
-        <.link :if={story.story_author} patch={~p"/story?author_id=#{story.story_author_id}"} class="mt-1 text-sm">
-          <%= story.story_author.name %>
-        </.link>
-        <.story_details story={story} />
-      </div>
-      <div class="md:flex-grow cursor-pointer" phx-click={JS.patch(~p"/story/#{story.id}")}>
-        <h2 class="text-2xl font-medium mb-2">
-          <%= story.title %>
-          <.icon name={if favorite?(story), do: "hero-star-solid", else: "hero-star"} phx-click="set_favorite" phx-value-id={story.id}/>
-        </h2>
-        <p class="leading-relaxed">
-          <%= story.story_excerpt %>
-        </p>
-      </div>
+    <div id="stories" phx-update="stream">
+      <%= for {dom_id, story} <- @streams.stories do %>
+        <div id={dom_id} class="mb-6">
+          <div class="prose">
+            <span>
+              <%= story.story_categories |> Enum.map(& &1.name) |> Enum.sort |> Enum.join(", ") %>
+            </span>
+            <.link :if={story.story_author} patch={~p"/story?author_id=#{story.story_author_id}"} class="">
+              <%= story.story_author.name %>
+            </.link>
+            <.story_details story={story} />
+          </div>
+
+          <div class="cursor-pointer prose">
+            <h4 class="mb-0">
+              <%= story.title %>
+              <.icon name={if favorite?(story), do: "hero-star-solid", else: "hero-star"} phx-click="set_favorite" phx-value-id={story.id}/>
+            </h4>
+            <p class="text-justify" phx-click="set_story" phx-value-id={story.id}>
+              <%= story.story_excerpt %>
+            </p>
+          </div>
+        </div>
+      <% end %>
     </div>
-  <% end %>
+
+    <.pagination page={@page} path={& ~p"/story?#{Map.put(@filter_params, "page", &1)}" } class="mb-4"/>
+  </div>
+
+  <div class="flex-1 w-7/12 p-4">
+    <article :if={assigns[:story]} class="prose">
+      <h4><%= @story.title %></h4>
+      <%= raw @story.story_body %>
+    </article>
+  </div>
 </div>
-
-<.pagination page={@page} path={& ~p"/story?#{Map.put(@filter_params, "page", &1)}" } class="mb-4"/>
-
-<.modal :if={@live_action == :show} id="story-modal" show on_cancel={JS.patch(~p"/story?#{@filter_params}")}>
-  <div class="mb-4">
-    <h3 class="text-lg"><%= @story.title %></h3>
-    <.story_details story={@story} />
-  </div>
-  <div class="overflow-y-scroll pr-4" style="max-height: 75vh;">
-    <%= raw @story.story_body %>
-  </div>
-</.modal>
