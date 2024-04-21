@@ -14,12 +14,14 @@
           <.story_details story={story} />
         </div>
 
-        <div class="cursor-pointer prose">
+        <div class="cursor-pointer prose" phx-click="set_current_story" phx-value-id={story.id}>
           <h4 class="mb-0">
             <%= story.title %>
-            <.icon name={if favorite?(story), do: "hero-star-solid", else: "hero-star"} phx-click="set_favorite" phx-value-id={story.id}/>
+            <span phx-click="set_favorite" phx-value-id={story.id}>
+              <.icon name={if favorite?(story), do: "hero-star-solid", else: "hero-star"}/>
+            </span>
           </h4>
-          <p class="text-justify leading-tight" phx-click="set_current_story" phx-value-id={story.id}>
+          <p class="text-justify leading-tight">
             <%= story.story_excerpt %>
           </p>
         </div>

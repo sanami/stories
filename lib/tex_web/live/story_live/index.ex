@@ -49,6 +49,14 @@ defmodule TexWeb.StoryLive.Index do
       Stories.set_favorite(story_id)
       |> Repo.preload([:story_author, :story_categories])
 
+    socket =
+      if socket.assigns[:current_story] && socket.assigns.current_story.id == story.id do
+        current_story = %{socket.assigns.current_story | favorited_at: story.favorited_at}
+        assign(socket, :current_story, current_story)
+      else
+        socket
+      end
+
     {:noreply, update_existing_story(socket, story)}
   end
 
