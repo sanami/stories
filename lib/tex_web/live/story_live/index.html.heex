@@ -3,7 +3,7 @@
     <.pagination page={@page} />
 
     <div id="stories" phx-update="stream">
-      <div :for={{dom_id, story} <- @streams.stories} id={dom_id} class="mb-6">
+      <div :for={{dom_id, story} <- @streams.stories} id={dom_id} class={"mb-6 #{current_story_style(assigns, story)}"}>
         <div class="prose">
           <span>
             <%= story.story_categories |> Enum.map(& &1.name) |> Enum.sort |> Enum.join(", ") %>
@@ -19,7 +19,7 @@
             <%= story.title %>
             <.icon name={if favorite?(story), do: "hero-star-solid", else: "hero-star"} phx-click="set_favorite" phx-value-id={story.id}/>
           </h4>
-          <p class="text-justify leading-tight" phx-click="set_story" phx-value-id={story.id}>
+          <p class="text-justify leading-tight" phx-click="set_current_story" phx-value-id={story.id}>
             <%= story.story_excerpt %>
           </p>
         </div>
@@ -30,9 +30,9 @@
   </div>
 
   <div class="flex-1 w-7/12 p-4 overflow-y-auto">
-    <article :if={assigns[:story]} class="prose">
-      <h4><%= @story.title %></h4>
-      <%= raw @story.story_body %>
+    <article :if={assigns[:current_story]} class="prose">
+      <h4><%= @current_story.title %></h4>
+      <%= raw @current_story.story_body %>
     </article>
   </div>
 </div>

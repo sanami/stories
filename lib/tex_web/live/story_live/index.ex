@@ -22,54 +22,46 @@ defmodule TexWeb.StoryLive.Index do
     {:noreply, apply_action(socket, socket.assigns[:live_action], params)}
   end
 
-  @impl true
-  def handle_event("filter", params, socket) do
-    {:noreply, set_stories(socket, params)}
-  end
-
-  @impl true
-  def handle_event("set_favorite", %{"id" => id}, socket) do
-    story =
-      Stories.set_favorite(id)
-      |> Repo.preload([:story_author, :story_categories])
-    socket = stream_insert(socket, :stories, story)
-
-    {:noreply, socket}
-  end
-
-  @impl true
-  def handle_event("set_story", %{"id" => story_id}, socket) do
-    filter_params = Map.merge(socket.assigns[:filter_params], %{"story_id" => story_id})
-
-    socket =
-      socket
-      |> assign(:filter_params, filter_params)
-      |> set_story(filter_params)
-
-    {:noreply, socket}
-  end
-
-  @impl true
-  def handle_event("set_page", %{"page" => page}, socket) do
-    filter_params = Map.merge(socket.assigns[:filter_params], %{"page" => page})
-    socket = set_stories(socket, filter_params)
-
-    {:noreply, socket}
-  end
-
   # Live actions
   defp apply_action(socket, :index, params) do
     socket
     |> assign(:page_title, "Рассказы")
-    |> assign(story: nil, is_favorites: false)
+    |> assign(is_favorites: false)
     |> set_stories(params)
   end
 
   defp apply_action(socket, :favorites, params) do
     socket
     |> assign(:page_title, "Избранное")
-    |> assign(story: nil, is_favorites: true)
+    |> assign(is_favorites: true)
     |> set_stories(params)
+  end
+
+  # Events
+  @impl true
+  def handle_event("filter", params, socket) do
+    {:noreply, set_stories(socket, params)}
+  end
+
+  @impl true
+  def handle_event("set_favorite", %{"id" => story_id}, socket) do
+    story =
+      Stories.set_favorite(story_id)
+      |> Repo.preload([:story_author, :story_categories])
+
+    {:noreply, update_existing_story(socket, story)}
+  end
+
+  @impl true
+  def handle_event("set_current_story", %{"id" => story_id}, socket) do
+    story_id = String.to_integer(story_id)
+    {:noreply, set_current_story(socket, story_id)}
+  end
+
+  @impl true
+  def handle_event("set_page", %{"page" => page}, socket) do
+    filter_params = Map.merge(socket.assigns[:filter_params], %{"page" => page})
+    {:noreply, set_stories(socket, filter_params)}
   end
 
   defp set_stories(socket, params, stream \\ true) do
@@ -78,7 +70,7 @@ defmodule TexWeb.StoryLive.Index do
     is_favorites = socket.assigns[:is_favorites]
     filter_params =
       params
-      |> Map.take(~w[query author_id cat_ids rating page page_size sort sort_dir story_id])
+      |> Map.take(~w[query author_id cat_ids rating page page_size sort sort_dir])
       |> Map.filter(fn {_key, val} -> val && val != "" && val != [] end)
 
     page =
@@ -96,27 +88,43 @@ defmodule TexWeb.StoryLive.Index do
       end
 
     socket
-    |> set_story(filter_params)
     |> stream(:stories, stories, reset: true)
     |> assign(author: author, page: page, filter_params: filter_params, filter_form: to_form(filter_params))
   end
 
-  defp set_story(socket, params) do
-    if params["story_id"] do
-      story = Stories.get_story!(params["story_id"])
+  defp set_current_story(socket, story_id) do
+    prev_story = socket.assigns[:current_story]
+
+    if !prev_story || prev_story.id != story_id do
+      story =
+        Stories.get_story!(story_id)
+        |> Repo.preload([:story_author, :story_categories])
 
       socket
-      |> assign(:story, story)
-      |> assign(:page_title, story.title)
+      |> assign(:current_story, story)
+      |> update_existing_story(story)
+      |> update_existing_story(prev_story)
     else
       socket
-      |> assign(:story, nil)
-      |> assign(:page_title, nil)
+    end
+  end
+
+  defp update_existing_story(socket, story) do
+    if story do
+      stream_insert(socket, :stories, story)
+    else
+      socket
     end
   end
 
   # Helpers
   def favorite?(story) do
     !!story.favorited_at
+  end
+
+  def current_story_style(assigns, story) do
+    if assigns[:current_story] && assigns[:current_story].id == story.id do
+      "bg-base-300"
+    end
   end
 end
