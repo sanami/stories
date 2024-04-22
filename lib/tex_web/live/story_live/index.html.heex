@@ -21,9 +21,11 @@
               <.icon name={if favorite?(story), do: "hero-star-solid", else: "hero-star"}/>
             </span>
           </h4>
-          <p class="text-justify leading-tight">
-            <%= story.story_excerpt %>
-          </p>
+          <div class="max-h-32 overflow-y-auto">
+            <p class="text-justify leading-tight mt-0 text-sm">
+              <%= story.story_excerpt %>
+            </p>
+          </div>
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 <div :if={@page.total_entries > 0} {Map.delete(@rest, :class)} class={"flex justify-center #{@rest[:class]}"}>
   <div class="join">
     <button class="join-item btn btn-sm" phx-click="set_page" phx-value-page={@page.page_number - 1}>
-      <span class="hero-chevron-left-mini"/>
+      <.icon name="hero-chevron-left-mini" />
     </button>
     <button class="join-item btn btn-sm -btn-disabled">
       <%= @page.page_number %>
@@ -9,7 +9,7 @@
       <%= @page.total_pages %>
     </button>
     <button class="join-item btn btn-sm" phx-click="set_page" phx-value-page={@page.page_number + 1}>
-      <span class="hero-chevron-right-mini"/>
+      <.icon name="hero-chevron-right-mini" />
     </button>
   </div>
 </div>
