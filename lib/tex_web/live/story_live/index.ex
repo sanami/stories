@@ -95,8 +95,11 @@ defmodule TexWeb.StoryLive.Index do
         []
       end
 
+    story_ids = Enum.map(stories, &(&1.id))
+
     socket
     |> stream(:stories, stories, reset: true)
+    |> assign(:exiting_story_ids, story_ids)
     |> assign(author: author, page: page, filter_params: filter_params, filter_form: to_form(filter_params))
   end
 
@@ -118,7 +121,8 @@ defmodule TexWeb.StoryLive.Index do
   end
 
   defp update_existing_story(socket, story) do
-    if story do
+    story_ids = socket.assigns[:exiting_story_ids]
+    if story && story_ids && Enum.any?(story_ids, &(&1 == story.id)) do
       stream_insert(socket, :stories, story)
     else
       socket
