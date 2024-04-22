@@ -80,6 +80,7 @@ defmodule TexWeb.StoryLive.Index do
       params
       |> Map.take(~w[query author_id cat_ids rating page page_size sort sort_dir])
       |> Map.filter(fn {_key, val} -> val && val != "" && val != [] end)
+      |> Map.put_new("page", 1)
 
     page =
       Stories.list_stories(filter_params, is_favorites)
