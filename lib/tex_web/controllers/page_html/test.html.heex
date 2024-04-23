@@ -1,0 +1,36 @@
+<div class="max-w-lg">
+  <.header>
+    page#test
+
+    <:subtitle>Use this form to manage test records in your database.</:subtitle>
+
+    <:actions>
+      <.link href={~p"/test"}><.button class="btn-sm">Test</.button></.link>
+    </:actions>
+  </.header>
+
+  <.test_form changeset={@changeset} action={~p"/test"} />
+
+  <.list>
+    <:item title="Title"><%= "@post.title" %></:item>
+    <:item title="Views"><%= "@post.views" %></:item>
+  </.list>
+
+  <.table id="tests" class="table-xs " rows={@tests} row_click={&JS.navigate(~p"/test?#{&1.attr1}")}>
+    <:col :let={test} label="Attr1"><%= test.attr1 %></:col>
+    <:col :let={test} label="Attr2"><%= test.attr2 %></:col>
+    <:col :let={test} label="Attr3"><%= test.attr3 %></:col>
+
+    <:action :let={test}>
+      <.link navigate={~p"/test"}>Edit</.link>
+    </:action>
+
+    <:action :let={test}>
+      <.link href={~p"/test"} method="delete" data-confirm="Are you sure?">
+        Delete
+      </.link>
+    </:action>
+  </.table>
+
+  <.back navigate={~p"/test"}>Back to test</.back>
+</div>

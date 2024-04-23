@@ -18,6 +18,7 @@ defmodule TexWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/test", PageController, :test
 
     live "/story", StoryLive.Index, :index
     live "/story/favorites", StoryLive.Index, :favorites

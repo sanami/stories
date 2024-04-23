@@ -1,0 +1,17 @@
+<.simple_form :let={f} for={@changeset} action={@action} as="test" method="get">
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+
+  <.input field={f[:attr1]} type="text" label="Attr1" />
+  <.input field={f[:attr2]} type="textarea" label="Attr2" />
+  <.input field={f[:attr3]} type="number" label="Attr3" />
+  <.input field={f[:attr4]} type="checkbox" label="Attr4" />
+  <.input field={f[:attr5]} type="select" label="Attr5" options={1..10}/>
+  <.input field={f[:attr6]} type="select" label="Attr6" options={1..10} multiple/>
+
+  <:actions>
+    <.button type="reset">Reset</.button>
+    <.button class="btn-primary">Save</.button>
+  </:actions>
+</.simple_form>
