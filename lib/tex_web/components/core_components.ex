@@ -89,6 +89,34 @@ defmodule TexWeb.CoreComponents do
   end
 
   @doc """
+  Renders a modal.
+  """
+  attr :id, :string, required: true
+  attr :width_class, :string, default: nil
+  slot :inner_block, required: true
+  slot :actions
+
+  def dialog(assigns) do
+    ~H"""
+    <dialog id={@id} class="modal">
+      <div class={["modal-box", @width_class]}>
+        <form method="dialog">
+          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+            <.icon name="hero-x-mark-solid" class="h-5 w-5 opacity-40 group-hover:opacity-70" />
+          </button>
+        </form>
+
+        <%= render_slot(@inner_block) %>
+
+        <div class="modal-action">
+          <%= render_slot(@actions) %>
+        </div>
+      </div>
+    </dialog>
+    """
+  end
+
+  @doc """
   Renders flash notices.
 
   ## Examples
@@ -539,9 +567,9 @@ defmodule TexWeb.CoreComponents do
 
   def list(assigns) do
     ~H"""
-    <div class="mt-14">
+    <div class="">
       <dl class="-my-4 divide-y divide-neutral-content">
-        <div :for={item <- @item} class="flex gap-4 py-4 text-sm leading-6 sm:gap-8">
+        <div :for={item <- @item} class="flex gap-4 py-2 text-sm leading-6 sm:gap-8">
           <dt class="w-1/4 flex-none"><%= item.title %></dt>
           <dd class=""><%= render_slot(item) %></dd>
         </div>

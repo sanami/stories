@@ -11,12 +11,13 @@
 
   <.test_form changeset={@changeset} action={~p"/test"} />
 
-  <.list>
-    <:item title="Title"><%= "@post.title" %></:item>
-    <:item title="Views"><%= "@post.views" %></:item>
-  </.list>
+  <div class="my-10">
+    <.list>
+      <:item :for={x <- 1..3}  title={"title#{x}"}>value<%= x %></:item>
+    </.list>
+  </div>
 
-  <.table id="tests" class="table-xs " rows={@tests} row_click={&JS.navigate(~p"/test?#{&1.attr1}")}>
+  <.table id="tests" rows={@tests} row_click={&JS.navigate(~p"/test?#{&1.attr1}")}>
     <:col :let={test} label="Attr1"><%= test.attr1 %></:col>
     <:col :let={test} label="Attr2"><%= test.attr2 %></:col>
     <:col :let={test} label="Attr3"><%= test.attr3 %></:col>
@@ -31,6 +32,13 @@
       </.link>
     </:action>
   </.table>
-
-  <.back navigate={~p"/test"}>Back to test</.back>
 </div>
+
+<button class="btn" onclick="my_modal_1.showModal()">open modal</button>
+
+<.dialog id="my_modal_1" width_class="w-11/12 max-w-5xl">
+  <h3 class="font-bold text-lg">Hello!</h3>
+  <p class="py-4">Press ESC key or click the button to close</p>
+</.dialog>
+
+<.back navigate={~p"/test"}>Back to test</.back>
