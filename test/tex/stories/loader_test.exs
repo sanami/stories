@@ -72,4 +72,12 @@ defmodule Tex.Stories.LoaderTest do
     assert cc1[cat1.oid] == cat1
     assert aa1[au1.oid] == au1
   end
+
+  test "load_fake_data" do
+    res = Loader.load_fake_data(2, 3, 5)
+    pp res
+    assert Stories.count(StoryCategory) == 2
+    assert Stories.count(StoryAuthor) == 3
+    assert Stories.count(Story) == 5
+  end
 end

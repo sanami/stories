@@ -6,8 +6,16 @@ defmodule Tex.Stories do
   alias Ecto.Multi
   alias Tex.Stories.{Story, StoryCategory, StoryAuthor, StorySearch}
 
-  def count(module) do
-    Repo.aggregate(module, :count)
+  def count(schema) do
+    Repo.aggregate(schema, :count)
+  end
+
+  def random(schema) do
+    hd randoms(schema, 1)
+  end
+
+  def randoms(schema, count) do
+    from(schema, order_by: fragment("RANDOM()"), limit: ^count) |> Repo.all
   end
 
   # Category

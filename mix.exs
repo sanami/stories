@@ -55,6 +55,7 @@ defmodule Tex.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.2"},
       {:scrivener_ecto, "~> 2.0"},
+      {:faker, "~> 0.18"}
     ]
   end
 

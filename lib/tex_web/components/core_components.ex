@@ -528,7 +528,7 @@ defmodule TexWeb.CoreComponents do
         >
           <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="hover:bg-base-200">
             <td
-              :for={{col, i} <- Enum.with_index(@col)}
+              :for={{col, _i} <- Enum.with_index(@col)}
               phx-click={@row_click && @row_click.(row)}
               class={}
             >

@@ -79,4 +79,63 @@ defmodule Tex.Stories.Loader do
 
     {all_cats_by_oid, all_authors_by_oid}
   end
+
+  def create_fake(fake_fn) do
+    try do
+      fake_fn.()
+    rescue
+      _ ->
+        Logger.error("!create_fake")
+        create_fake(fake_fn)
+    end
+  end
+
+  def load_fake_data(cat_count, author_count, story_count) do
+    Logger.info "load_fake_data(#{cat_count}, #{author_count}, #{story_count})"
+
+    Enum.each 1..cat_count, fn i ->
+      create_fake fn ->
+        attrs = %{
+          name: Faker.Industry.industry,
+          uid: i,
+          oid: "oid#{i}"
+        }
+
+        Stories.create_story_category(attrs)
+      end
+    end
+
+    Enum.each 1..author_count, fn i ->
+      create_fake fn ->
+        attrs = %{
+          name: Faker.Person.first_name <> " " <> Faker.Person.last_name,
+          uid: i,
+          oid: "oid#{i}"
+        }
+
+        Stories.create_story_author(attrs)
+      end
+    end
+
+    Enum.each 1..story_count, fn i ->
+      create_fake fn ->
+        p1 = Faker.Lorem.paragraph
+        p2 = [p1 | Faker.Lorem.paragraphs(20 + :rand.uniform(20))] |> Enum.map(&( "<p>#{&1}</p>" ))
+
+        attrs = %{
+          story_date: Faker.DateTime.backward(365),
+          story_excerpt: p1,
+          story_body: Enum.join(p2, "\n"),
+          rating: Float.round(:rand.uniform * 10, 2),
+          rating_count: :rand.uniform(99),
+          title: Faker.Lorem.sentence,
+          uid: i,
+          story_author_id: Stories.random(Stories.StoryAuthor).id,
+        }
+
+        {:ok, story} = Stories.create_story(attrs)
+        Stories.set_story_categories(story, {:objects, Stories.randoms(Stories.StoryCategory, :rand.uniform(3))})
+      end
+    end
+  end
 end
