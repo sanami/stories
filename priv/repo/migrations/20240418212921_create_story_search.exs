@@ -1,4 +1,4 @@
-defmodule Tex.Repo.Migrations.CreateStorySearch do
+defmodule App.Repo.Migrations.CreateStorySearch do
   use Ecto.Migration
 
   def up do

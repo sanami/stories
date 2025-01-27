@@ -7,25 +7,25 @@
 # General application configuration
 import Config
 
-config :tex,
-  ecto_repos: [Tex.Repo],
+config :app,
+  ecto_repos: [App.Repo],
   generators: [timestamp_type: :utc_datetime]
 
 # Configures the endpoint
-config :tex, TexWeb.Endpoint,
+config :app, AppWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
-    formats: [html: TexWeb.ErrorHTML, json: TexWeb.ErrorJSON],
+    formats: [html: AppWeb.ErrorHTML, json: AppWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: Tex.PubSub,
+  pubsub_server: App.PubSub,
   live_view: [signing_salt: "OW0NdU/E"]
 
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",
-  tex: [
+  app: [
     args:
       ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
@@ -35,7 +35,7 @@ config :esbuild,
 # Configure tailwind (the version is required)
 config :tailwind,
   version: "3.4.0",
-  tex: [
+  app: [
     args: ~w(
       --config=tailwind.config.js
       --input=css/app.css

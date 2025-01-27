@@ -5,12 +5,12 @@
 # Inside the script, you can read and write to any of your
 # repositories directly:
 #
-#     Tex.Repo.insert!(%Tex.SomeSchema{})
+#     App.Repo.insert!(%App.SomeSchema{})
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-alias Tex.Stories.Loader
+alias App.Stories.Loader
 
 lev = Logger.level
 Logger.configure level: :info

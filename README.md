@@ -1,4 +1,4 @@
-# Tex
+# App
 
 To start your Phoenix server:
 

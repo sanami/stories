@@ -1,7 +1,7 @@
-defmodule Tex.StoriesFixtures do
+defmodule App.StoriesFixtures do
   @moduledoc """
   This module defines test helpers for creating
-  entities via the `Tex.Stories` context.
+  entities via the `App.Stories` context.
   """
 
   @doc """
@@ -15,7 +15,7 @@ defmodule Tex.StoriesFixtures do
         uid: 42,
         oid: "42"
       })
-      |> Tex.Stories.create_story_category()
+      |> App.Stories.create_story_category()
 
     story_category
   end
@@ -31,7 +31,7 @@ defmodule Tex.StoriesFixtures do
         uid: 42,
         oid: "42"
       })
-      |> Tex.Stories.create_story_author()
+      |> App.Stories.create_story_author()
 
     story_author
   end
@@ -51,7 +51,7 @@ defmodule Tex.StoriesFixtures do
         title: "story title",
         uid: 42
       })
-      |> Tex.Stories.create_story()
+      |> App.Stories.create_story()
 
     story
   end

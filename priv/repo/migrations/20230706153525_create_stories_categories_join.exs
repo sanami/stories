@@ -1,4 +1,4 @@
-defmodule Tex.Repo.Migrations.CreateStoriesCategoriesJoin do
+defmodule App.Repo.Migrations.CreateStoriesCategoriesJoin do
   use Ecto.Migration
 
   def change do
