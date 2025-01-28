@@ -134,7 +134,7 @@ defmodule App.Stories do
   end
 
   def story_file(story) do
-    folder = Application.get_env(:app, :story_storage, "priv/data/stories")
+    folder = Application.get_env(:app, :story_storage, "priv/db/story_body")
     File.mkdir_p!(folder)
     Path.join(folder, "#{story.id}.html")
   end

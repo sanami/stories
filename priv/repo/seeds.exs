@@ -12,19 +12,20 @@
 
 alias App.Stories.Loader
 
-lev = Logger.level
+level = Logger.level
 Logger.configure level: :info
 
-sc_file = "priv/data/story_categories.bsondump"
-sa_file = "priv/data/story_authors.bsondump"
-st_file = "priv/data/stories.bsondump"
+sc_file = "priv/db/import/story_categories.bsondump"
+sa_file = "priv/db/import/story_authors.bsondump"
+st_file = "priv/db/import/stories.bsondump"
 
 if Enum.all?([sc_file, sa_file, st_file], &File.exists?/1) do
   Loader.load_categories(sc_file)
   Loader.load_authors(sa_file)
   Loader.load_stories(st_file)
 else
+  IO.puts "Import files not found. Seeding fake data"
   Loader.load_fake_data(10, 100, 1000)
 end
 
-Logger.configure level: lev
+Logger.configure level: level

@@ -6,7 +6,7 @@ import Config
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :app, App.Repo,
-  database: Path.expand("../priv/data/app_test.db", __DIR__),
+  database: Path.expand("../priv/db/app_test.db", __DIR__),
   pool_size: 5,
   pool: Ecto.Adapters.SQL.Sandbox
 
@@ -27,4 +27,4 @@ config :phoenix, :plug_init_mode, :runtime
 config :phoenix_live_view,
   enable_expensive_runtime_checks: true
 
-config :app, :story_storage, "tmp/priv/data/stories"
+config :app, :story_storage, "tmp/priv/db/story_body"

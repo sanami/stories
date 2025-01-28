@@ -2,7 +2,7 @@ import Config
 
 # Configure your database
 config :app, App.Repo,
-  database: Path.expand("../priv/data/app_dev.db", __DIR__),
+  database: Path.expand("../priv/db/app_dev.db", __DIR__),
   pool_size: 5,
   stacktrace: true,
   show_sensitive_data_on_connection_error: true

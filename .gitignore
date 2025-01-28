@@ -36,4 +36,4 @@ npm-debug.log
 *.db
 *.db-*
 
-/priv/data/
+/priv/db/
