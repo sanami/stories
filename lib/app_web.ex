@@ -82,7 +82,7 @@ defmodule AppWeb do
     quote do
       # HTML escaping functionality
       import Phoenix.HTML
-      # Core UI components and translation
+      # Core UI components
       import AppWeb.CoreComponents
 
       # Shortcut for generating JS commands
@@ -103,7 +103,7 @@ defmodule AppWeb do
   end
 
   @doc """
-  When used, dispatch to the appropriate controller/view/etc.
+  When used, dispatch to the appropriate controller/live_view/etc.
   """
   defmacro __using__(which) when is_atom(which) do
     apply(__MODULE__, which, [])

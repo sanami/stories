@@ -78,41 +78,13 @@ defmodule AppWeb.CoreComponents do
                 </button>
               </div>
               <div id={"#{@id}-content"}>
-                <%= render_slot(@inner_block) %>
+                {render_slot(@inner_block)}
               </div>
             </.focus_wrap>
           </div>
         </div>
       </div>
     </div>
-    """
-  end
-
-  @doc """
-  Renders a modal.
-  """
-  attr :id, :string, required: true
-  attr :width_class, :string, default: nil
-  slot :inner_block, required: true
-  slot :actions
-
-  def dialog(assigns) do
-    ~H"""
-    <dialog id={@id} class="modal">
-      <div class={["modal-box", @width_class]}>
-        <form method="dialog">
-          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-            <.icon name="hero-x-mark-solid" class="h-5 w-5 opacity-40 group-hover:opacity-70" />
-          </button>
-        </form>
-
-        <%= render_slot(@inner_block) %>
-
-        <div class="modal-action">
-          <%= render_slot(@actions) %>
-        </div>
-      </div>
-    </dialog>
     """
   end
 
@@ -151,9 +123,9 @@ defmodule AppWeb.CoreComponents do
       <p :if={@title} class="flex items-center gap-1.5 text-sm font-semibold leading-6">
         <.icon :if={@kind == :info} name="hero-information-circle-mini" class="h-4 w-4" />
         <.icon :if={@kind == :error} name="hero-exclamation-circle-mini" class="h-4 w-4" />
-        <%= @title %>
+        {@title}
       </p>
-      <p class="mt-2 text-sm leading-5"><%= msg %></p>
+      <p class="mt-2 text-sm leading-5">{msg}</p>
       <button type="button" class="group absolute top-1 right-1 p-2" aria-label="close">
         <.icon name="hero-x-mark-solid" class="h-5 w-5 opacity-40 group-hover:opacity-70" />
       </button>
@@ -216,7 +188,7 @@ defmodule AppWeb.CoreComponents do
         </:actions>
       </.simple_form>
   """
-  attr :for, :any, required: true, doc: "the datastructure for the form"
+  attr :for, :any, required: true, doc: "the data structure for the form"
   attr :as, :any, default: nil, doc: "the server side parameter to collect all input under"
 
   attr :rest, :global,
@@ -230,9 +202,9 @@ defmodule AppWeb.CoreComponents do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
       <div class="flex flex-col gap-2">
-        <%= render_slot(@inner_block, f) %>
+        {render_slot(@inner_block, f)}
         <div :for={action <- @actions} class="mt-2 flex items-center justify-end gap-6">
-          <%= render_slot(action, f) %>
+          {render_slot(action, f)}
         </div>
       </div>
     </.form>
@@ -263,7 +235,7 @@ defmodule AppWeb.CoreComponents do
       ]}
       {@rest}
     >
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </button>
     """
   end
@@ -286,7 +258,8 @@ defmodule AppWeb.CoreComponents do
     * For live file uploads, see `Phoenix.Component.live_file_input/1`
 
   See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input
-  for more information.
+  for more information. Unsupported types, such as hidden and radio,
+  are best written directly in your templates.
 
   ## Examples
 
@@ -300,8 +273,8 @@ defmodule AppWeb.CoreComponents do
 
   attr :type, :string,
     default: "text",
-    values: ~w(checkbox color date datetime-local email file hidden month number password
-               range radio search select tel text textarea time url week)
+    values: ~w(checkbox color date datetime-local email file month number password
+               range search select tel text textarea time url week)
 
   attr :field, Phoenix.HTML.FormField,
     doc: "a form field struct retrieved from the form, for example: @form[:email]"
@@ -316,12 +289,12 @@ defmodule AppWeb.CoreComponents do
     include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
                 multiple pattern placeholder readonly required rows size step)
 
-  slot :inner_block
-
   def input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
+
     assigns
     |> assign(field: nil, id: assigns.id || field.id)
-    |> assign(:errors, Enum.map(field.errors, &translate_error(&1)))
+    |> assign(:errors, Enum.map(errors, &translate_error(&1)))
     |> assign_new(:name, fn -> if assigns.multiple, do: field.name <> "[]", else: field.name end)
     |> assign_new(:value, fn -> field.value end)
     |> input()
@@ -334,9 +307,9 @@ defmodule AppWeb.CoreComponents do
       end)
 
     ~H"""
-    <div phx-feedback-for={@name} class="form-control">
+    <div class="form-control">
       <label class="cursor-pointer label self-start gap-2">
-        <input type="hidden" name={@name} value="false" />
+        <input type="hidden" name={@name} value="false" disabled={@rest[:disabled]} />
         <input
           type="checkbox"
           id={@id}
@@ -346,19 +319,19 @@ defmodule AppWeb.CoreComponents do
           class="checkbox"
           {@rest}
         />
-        <span class="label-text"><%= @label %></span>
+        <span class="label-text">{@label}</span>
       </label>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
 
   def input(%{type: "select"} = assigns) do
     ~H"""
-    <div phx-feedback-for={@name}>
+    <div>
       <label class="form-control">
         <div class="label">
-          <span class="label-text"><%= @label %></span>
+          <span class="label-text">{@label}</span>
         </div>
 
         <select
@@ -368,21 +341,21 @@ defmodule AppWeb.CoreComponents do
           multiple={@multiple}
           {@rest}
         >
-          <option :if={@prompt} value=""><%= @prompt %></option>
-          <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
+          <option :if={@prompt} value="">{@prompt}</option>
+          {Phoenix.HTML.Form.options_for_select(@options, @value)}
         </select>
       </label>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
 
   def input(%{type: "textarea"} = assigns) do
     ~H"""
-    <div phx-feedback-for={@name}>
+    <div>
       <label class="form-control">
         <div class="label">
-          <span class="label-text"><%= @label %></span>
+          <span class="label-text">{@label}</span>
         </div>
 
         <textarea
@@ -393,8 +366,8 @@ defmodule AppWeb.CoreComponents do
             @errors != [] && "textarea-error"
           ]}
           {@rest}
-        ><%= Phoenix.HTML.Form.normalize_value("textarea", @value) %></textarea>
-        <.error :for={msg <- @errors}><%= msg %></.error>
+        >{Phoenix.HTML.Form.normalize_value("textarea", @value)}</textarea>
+        <.error :for={msg <- @errors}>{msg}</.error>
       </label>
     </div>
     """
@@ -403,10 +376,10 @@ defmodule AppWeb.CoreComponents do
   # All other inputs text, datetime-local, url, password, etc. are handled here...
   def input(assigns) do
     ~H"""
-    <div phx-feedback-for={@name}>
+    <div>
       <label class="form-control">
         <div class="label">
-          <span class="label-text"><%= @label %></span>
+          <span class="label-text">{@label}</span>
         </div>
 
         <input
@@ -421,7 +394,7 @@ defmodule AppWeb.CoreComponents do
           {@rest}
         />
       </label>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
@@ -435,7 +408,7 @@ defmodule AppWeb.CoreComponents do
   def label(assigns) do
     ~H"""
     <label for={@for} class="block text-sm font-semibold leading-6">
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </label>
     """
   end
@@ -447,9 +420,9 @@ defmodule AppWeb.CoreComponents do
 
   def error(assigns) do
     ~H"""
-    <p class="mt-3 flex gap-1 text-sm leading-6 text-error phx-no-feedback:hidden">
+    <p class="mt-3 flex gap-1 text-sm leading-6 text-error">
       <.icon name="hero-exclamation-circle-mini" class="mt-0.5 h-5 w-5 flex-none" />
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </p>
     """
   end
@@ -468,13 +441,13 @@ defmodule AppWeb.CoreComponents do
     <header class={[@actions != [] && "flex items-center justify-between gap-6", @class]}>
       <div>
         <h1 class="text-lg font-semibold leading-8">
-          <%= render_slot(@inner_block) %>
+          {render_slot(@inner_block)}
         </h1>
         <p :if={@subtitle != []} class="mt-2 text-sm leading-6">
-          <%= render_slot(@subtitle) %>
+          {render_slot(@subtitle)}
         </p>
       </div>
-      <div class="flex-none"><%= render_slot(@actions) %></div>
+      <div class="flex-none">{render_slot(@actions)}</div>
     </header>
     """
   end
@@ -485,8 +458,8 @@ defmodule AppWeb.CoreComponents do
   ## Examples
 
       <.table id="users" rows={@users}>
-        <:col :let={user} label="id"><%= user.id %></:col>
-        <:col :let={user} label="username"><%= user.username %></:col>
+        <:col :let={user} label="id">{user.id}</:col>
+        <:col :let={user} label="username">{user.username}</:col>
       </.table>
   """
   attr :id, :string, required: true
@@ -515,7 +488,7 @@ defmodule AppWeb.CoreComponents do
       <table class="table">
         <thead class="">
           <tr>
-            <th :for={col <- @col} class=""><%= col[:label] %></th>
+            <th :for={col <- @col} class="">{col[:label]}</th>
             <th :if={@action != []} class="">
               <span class="sr-only">Actions</span>
             </th>
@@ -532,7 +505,7 @@ defmodule AppWeb.CoreComponents do
               phx-click={@row_click && @row_click.(row)}
               class={}
             >
-              <%= render_slot(col, @row_item.(row)) %>
+              {render_slot(col, @row_item.(row))}
             </td>
             <td :if={@action != []} class="">
               <div class="">
@@ -540,7 +513,7 @@ defmodule AppWeb.CoreComponents do
                   :for={action <- @action}
                   class=""
                 >
-                  <%= render_slot(action, @row_item.(row)) %>
+                  {render_slot(action, @row_item.(row))}
                 </span>
               </div>
             </td>
@@ -557,8 +530,8 @@ defmodule AppWeb.CoreComponents do
   ## Examples
 
       <.list>
-        <:item title="Title"><%= @post.title %></:item>
-        <:item title="Views"><%= @post.views %></:item>
+        <:item title="Title">{@post.title}</:item>
+        <:item title="Views">{@post.views}</:item>
       </.list>
   """
   slot :item, required: true do
@@ -570,8 +543,8 @@ defmodule AppWeb.CoreComponents do
     <div class="">
       <dl class="-my-4 divide-y divide-neutral-content">
         <div :for={item <- @item} class="flex gap-4 py-2 text-sm leading-6 sm:gap-8">
-          <dt class="w-1/4 flex-none"><%= item.title %></dt>
-          <dd class=""><%= render_slot(item) %></dd>
+          <dt class="w-1/4 flex-none">{item.title}</dt>
+          <dd class="">{render_slot(item)}</dd>
         </div>
       </dl>
     </div>
@@ -596,7 +569,7 @@ defmodule AppWeb.CoreComponents do
         class="text-sm font-semibold link link-hover"
       >
         <.icon name="hero-arrow-left-solid" class="h-3 w-3" />
-        <%= render_slot(@inner_block) %>
+        {render_slot(@inner_block)}
       </.link>
     </div>
     """
@@ -634,6 +607,7 @@ defmodule AppWeb.CoreComponents do
   def show(js \\ %JS{}, selector) do
     JS.show(js,
       to: selector,
+      time: 300,
       transition:
         {"transition-all transform ease-out duration-300",
          "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95",
@@ -657,6 +631,7 @@ defmodule AppWeb.CoreComponents do
     |> JS.show(to: "##{id}")
     |> JS.show(
       to: "##{id}-bg",
+      time: 300,
       transition: {"transition-all transform ease-out duration-300", "opacity-0", "opacity-100"}
     )
     |> show("##{id}-container")
