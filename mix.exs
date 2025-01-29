@@ -55,7 +55,8 @@ defmodule App.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:scrivener_ecto, "~> 2.0"},
-      {:faker, "~> 0.18"}
+      {:faker, "~> 0.18"},
+      {:dotenvy, "~> 1.0"},
     ]
   end
 
