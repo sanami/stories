@@ -69,7 +69,7 @@ defmodule App.Stories.Loader do
 
   def cache_data do
     all_cats_by_oid =
-      Enum.reduce(Stories.list_story_categories, %{}, fn x, acc ->
+      Enum.reduce(Stories.list_story_categories(false), %{}, fn x, acc ->
         Map.put(acc, x.oid, x)
       end)
     all_authors_by_oid =

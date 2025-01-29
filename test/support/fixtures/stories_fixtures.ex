@@ -1,4 +1,6 @@
 defmodule App.StoriesFixtures do
+  import App.TestHelpers
+
   @moduledoc """
   This module defines test helpers for creating
   entities via the `App.Stories` context.
@@ -11,9 +13,9 @@ defmodule App.StoriesFixtures do
     {:ok, story_category} =
       attrs
       |> Enum.into(%{
-        name: "cat 1",
-        uid: 42,
-        oid: "42"
+        name: seqs("cat "),
+        uid: seqn(),
+        oid: seqs("oid")
       })
       |> App.Stories.create_story_category()
 
@@ -27,9 +29,9 @@ defmodule App.StoriesFixtures do
     {:ok, story_author} =
       attrs
       |> Enum.into(%{
-        name: "author 1",
-        uid: 42,
-        oid: "42"
+        name: seqs("author "),
+        uid: seqn(),
+        oid: seqs("oid")
       })
       |> App.Stories.create_story_author()
 
@@ -49,7 +51,7 @@ defmodule App.StoriesFixtures do
         rating: 1,
         rating_count: 2,
         title: "story title",
-        uid: 42
+        uid: seqn()
       })
       |> App.Stories.create_story()
 

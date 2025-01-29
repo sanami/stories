@@ -19,8 +19,16 @@ defmodule App.Stories do
   end
 
   # Category
-  def list_story_categories do
-    Repo.all(StoryCategory)
+  def list_story_categories(only_visible? \\ true) do
+    q = StoryCategory
+    q =
+      if only_visible? do
+        where(q, is_visible: true)
+      else
+        q
+      end
+
+    Repo.all(q)
   end
 
   def get_story_category!(id), do: Repo.get!(StoryCategory, id)
@@ -33,6 +41,12 @@ defmodule App.Stories do
     %StoryCategory{}
     |> StoryCategory.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def set_visible(%StoryCategory{} = cat, is_visible) do
+    cat
+    |> StoryCategory.changeset(%{is_visible: is_visible})
+    |> Repo.update!
   end
 
   # Author

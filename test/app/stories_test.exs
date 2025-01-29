@@ -10,9 +10,12 @@ defmodule App.StoriesTest do
 
     @invalid_attrs %{name: nil, uid: nil}
 
-    test "list_story_categories/0 returns all story_categories" do
-      story_category = story_category_fixture()
-      assert Stories.list_story_categories() == [story_category]
+    test "list_story_categories" do
+      sc1 = story_category_fixture()
+      sc2 = story_category_fixture(is_visible: false)
+
+      assert Stories.list_story_categories() == [sc1]
+      assert Stories.list_story_categories(false) == [sc1, sc2]
     end
 
     test "get_story_category!/1 returns the story_category with given id" do
@@ -45,6 +48,14 @@ defmodule App.StoriesTest do
       assert Stories.count(StoryCategory) == 0
       _story_category = story_category_fixture()
       assert Stories.count(StoryCategory) == 1
+    end
+
+    test "set_visible" do
+      sc1 = story_category_fixture()
+      assert sc1.is_visible
+
+      sc1 = Stories.set_visible(sc1, false)
+      refute sc1.is_visible
     end
   end
 

@@ -24,8 +24,7 @@ defmodule App.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import App.DataCase
-
-      def pp(exp), do: IO.inspect(exp)
+      import App.TestHelpers
     end
   end
 
