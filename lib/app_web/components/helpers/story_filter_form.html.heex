@@ -1,7 +1,7 @@
 <.simple_form for={@filter_form} phx-change="filter">
   <.input field={@filter_form[:author_id]} label="Автор" type="select" options={if @author, do: [{@author.name, @author.id}], else: []} prompt="Все"/>
   <.input field={@filter_form[:rating]} label="Рейтинг" type="select" options={1..9} prompt="Любой"/>
-  <.input field={@filter_form[:cat_ids]} label="Категория" type="select" multiple options={Enum.map(@story_categories, & {&1.name, &1.id})} style="height: 8em"/>
+  <.input field={@filter_form[:cat_ids]} label="Категория" type="select" multiple options={Enum.map(@story_categories, & {"#{&1.name} [#{&1.id}]", &1.id})} style="height: 9em"/>
 
   <div class="flex gap-1.5">
     <.input field={@filter_form[:page]} type="number" min={1} max={@page.total_pages} phx-debounce="100" label="Страница"/>

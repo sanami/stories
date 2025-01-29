@@ -72,6 +72,7 @@ defmodule App.Stories do
     sort_dir = (args["sort_dir"] || "desc_nulls_last") |> String.to_existing_atom
 
     q = Story
+    q = from s in q, join: c in assoc(s, :story_categories), where: c.is_visible == true
 
     q = if is_favorites do
       from s in q, where: not is_nil(s.favorited_at)
