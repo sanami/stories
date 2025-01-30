@@ -33,7 +33,7 @@
     <.pagination page={@page} class="mb-4"/>
   </div>
 
-  <div class="flex-1 w-7/12 p-4 overflow-y-auto">
+  <div id="story_viewer" class="flex-1 w-7/12 p-4 overflow-y-auto" phx-hook="StoryViewer">
     <article :if={assigns[:current_story]} class="prose leading-snug">
       <h4><%= @current_story.title %></h4>
       <%= raw @current_story.story_body %>

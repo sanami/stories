@@ -6,7 +6,7 @@ defmodule AppWeb.StoryLive.Index do
 
   @impl true
   def mount(params, session, socket) do
-    Logger.debug "---mount #{inspect params} #{inspect session} #{socket.id} #{inspect self()}"
+    Logger.debug "---mount #{inspect params} #{inspect session}"
 
     socket =
       socket
@@ -18,7 +18,7 @@ defmodule AppWeb.StoryLive.Index do
 
   @impl true
   def handle_params(params, uri, socket) do
-    Logger.debug "---handle_params #{socket.assigns[:live_action]} #{inspect params} #{uri} #{socket.id} #{inspect self()}"
+    Logger.debug "---handle_params #{socket.assigns[:live_action]} #{inspect params} #{uri}"
     {:noreply, apply_action(socket, socket.assigns[:live_action], params)}
   end
 
@@ -131,11 +131,11 @@ defmodule AppWeb.StoryLive.Index do
   end
 
   # Helpers
-  def favorite?(story) do
+  defp favorite?(story) do
     !!story.favorited_at
   end
 
-  def current_story_style(assigns, story) do
+  defp current_story_style(assigns, story) do
     if assigns[:current_story] && assigns[:current_story].id == story.id do
       "bg-base-300"
     end
