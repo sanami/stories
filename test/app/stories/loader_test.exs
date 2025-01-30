@@ -15,8 +15,8 @@ defmodule App.Stories.LoaderTest do
     for {f, n} <- [{@category1, 38}, {@authors1, 5029}] do
       test "parse_bsondump #{f}" do
         res = Loader.parse_bsondump unquote(f), fn json, _i ->
-          # IO.inspect i
-          # IO.inspect json
+          # pp i
+          # pp json
           assert %{uid: _, oid: _} = json
         end
 
@@ -26,9 +26,9 @@ defmodule App.Stories.LoaderTest do
 
     test "parse_bsondump" do
       res = Loader.parse_bsondump @stories1, fn json, i ->
-        IO.inspect i
-        # IO.inspect Enum.join(json[:story_body], "\n")
-        IO.inspect Map.delete(json, :story_body)
+        pp i
+        # pp Enum.join(json[:story_body], "\n")
+        pp Map.delete(json, :story_body)
         assert %{uid: _, oid: _} = json
       end
 
@@ -40,7 +40,7 @@ defmodule App.Stories.LoaderTest do
       assert Stories.count(StoryCategory) == 38
 
       obj1 = StoryCategory |> first(:id) |> Repo.one
-      IO.inspect obj1
+      pp obj1
     end
 
     test "load_authors" do
@@ -48,7 +48,7 @@ defmodule App.Stories.LoaderTest do
       assert Stories.count(StoryAuthor) > 5000
 
       obj1 = StoryAuthor |> first(:id) |> Repo.one
-      IO.inspect obj1
+      pp obj1
     end
 
     test "load_stories" do
@@ -59,7 +59,7 @@ defmodule App.Stories.LoaderTest do
       assert Stories.count(Story) == 3
 
       obj1 = Story |> first(:id) |> Repo.one |> Repo.preload([:story_author, :story_categories])
-      IO.inspect obj1
+      pp obj1
       assert length(obj1.story_categories) == 1
     end
 
@@ -68,7 +68,7 @@ defmodule App.Stories.LoaderTest do
       au1 = story_author_fixture()
 
       res = {cc1, aa1} = Loader.cache_data
-      IO.inspect res
+      pp res
 
       assert cc1[cat1.oid] == cat1
       assert aa1[au1.oid] == au1

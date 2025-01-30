@@ -4,7 +4,7 @@ defmodule App.Stories do
 
   alias App.Repo
   alias Ecto.Multi
-  alias App.Stories.{Story, StoryCategory, StoryAuthor, StorySearch}
+  alias App.Stories.{Story, StoryAuthor, StoryCategory, StorySearch}
 
   def count(schema) do
     Repo.aggregate(schema, :count)
@@ -128,17 +128,15 @@ defmodule App.Stories do
   def create_story(attrs \\ %{}) do
     story = Story.changeset(%Story{}, attrs)
 
-    res =
-      Multi.new
-      |> Multi.insert(:story, story)
-      |> Multi.run(:file, fn _repo, %{story: story} -> save_story_body(story) end)
-      |> Multi.insert(:story_search, fn %{story: story} -> StorySearch.changeset(story) end)
-      |> Repo.transaction
-
-    with {:ok, %{story: story}} <- res do
-      {:ok, story}
-    else
-      err ->
+    Multi.new
+    |> Multi.insert(:story, story)
+    |> Multi.run(:file, fn _repo, %{story: story} -> save_story_body(story) end)
+    |> Multi.insert(:story_search, fn %{story: story} -> StorySearch.changeset(story) end)
+    |> Repo.transaction
+    |> case do
+      {:ok, %{story: story}} ->
+        {:ok, story}
+      {:error, _} = err ->
         Logger.error(inspect(err))
         err
     end
@@ -164,10 +162,11 @@ defmodule App.Stories do
   def load_story_body(story) do
     file = story_file(story)
 
-    with {:ok, story_body} <- File.read(file) do
-      %{story | story_body: story_body}
-    else
-      _ -> %{story | story_body: :not_found}
+    case File.read(file) do
+      {:ok, story_body} ->
+        %{story | story_body: story_body}
+      {:error, _} ->
+        %{story | story_body: :not_found}
     end
   end
 

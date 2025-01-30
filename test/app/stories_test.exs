@@ -140,14 +140,14 @@ defmodule App.StoriesTest do
 
       res = Stories.set_story_categories(story1, {:ids, [cat1.id, cat2.id]})
       #res = Stories.set_story_categories(story1, {:objects, [cat1, cat2]})
-      IO.inspect res
+      pp res
 
       story11 = Stories.get_story!(story1.id) |> Repo.preload(:story_categories)
-      IO.inspect story11
-      IO.inspect Enum.sort(story11.story_categories) == Enum.sort([cat1, cat2])
+      pp story11
+      pp Enum.sort(story11.story_categories) == Enum.sort([cat1, cat2])
 
       cats11 = Repo.all(assoc(story11, :story_categories))
-      IO.inspect Enum.sort(cats11) == Enum.sort([cat1, cat2])
+      pp Enum.sort(cats11) == Enum.sort([cat1, cat2])
     end
 
     test "load_story_body" do

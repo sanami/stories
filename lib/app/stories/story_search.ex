@@ -1,7 +1,7 @@
 defmodule App.Stories.StorySearch do
   use Ecto.Schema
   import Ecto.Changeset
-  alias App.Stories.{StorySearch, Story}
+  alias App.Stories.{Story, StorySearch}
 
   @primary_key {:id, :id, autogenerate: true, source: :rowid}
   schema "story_search" do
