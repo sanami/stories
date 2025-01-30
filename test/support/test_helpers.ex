@@ -15,5 +15,6 @@ defmodule App.TestHelpers do
     "#{str}#{n}#{ext}"
   end
 
+  # credo:disable-for-next-line
   def pp(exp), do: IO.inspect(exp)
 end

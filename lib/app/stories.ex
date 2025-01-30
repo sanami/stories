@@ -136,7 +136,7 @@ defmodule App.Stories do
     |> case do
       {:ok, %{story: story}} ->
         {:ok, story}
-      {:error, _} = err ->
+      {:error, _, _, _} = err ->
         Logger.error(inspect(err))
         err
     end

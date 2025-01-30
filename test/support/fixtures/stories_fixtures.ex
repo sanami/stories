@@ -41,6 +41,13 @@ defmodule App.StoriesFixtures do
   @doc """
   Generate a story.
   """
+  def story_fixture(%App.Stories.StoryCategory{} = cat, attrs) do
+    story = story_fixture(attrs)
+    App.Stories.set_story_categories(story, {:ids, [cat.id]})
+
+    story
+  end
+
   def story_fixture(attrs \\ %{}) do
     {:ok, story} =
       attrs

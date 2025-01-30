@@ -92,8 +92,10 @@ defmodule App.StoriesTest do
     @invalid_attrs %{story_date: nil, story_excerpt: nil, rating: nil, title: nil, uid: nil}
 
     test "list_stories/0 returns all stories" do
-      story_fixture(%{uid1: 1})
-      story_fixture(%{uid1: 2})
+      cat1 = story_category_fixture()
+
+      story_fixture(cat1, %{uid1: 1})
+      story_fixture(cat1, %{uid1: 2})
 
       res = Stories.list_stories |> Repo.all
       assert length(res) == 2
@@ -121,7 +123,9 @@ defmodule App.StoriesTest do
     end
 
     test "create_story/1 with invalid data returns error changeset" do
-      assert {:error, :story, %Ecto.Changeset{}, _} = Stories.create_story(@invalid_attrs)
+      res = Stories.create_story(@invalid_attrs)
+      pp res
+      assert {:error, :story, %Ecto.Changeset{}, _} = res
     end
 
     test "delete_story" do

@@ -5,8 +5,10 @@ defmodule AppWeb.StoryLiveTest do
   import App.StoriesFixtures
 
   defp create_story(_) do
-    story = story_fixture()
-    %{story: story}
+    cat = story_category_fixture()
+    story = story_fixture(cat, %{})
+
+    %{cat: cat, story: story}
   end
 
   describe "Index" do
