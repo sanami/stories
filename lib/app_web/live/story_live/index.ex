@@ -19,7 +19,13 @@ defmodule AppWeb.StoryLive.Index do
   @impl true
   def handle_params(params, uri, socket) do
     Logger.debug "---handle_params #{socket.assigns[:live_action]} #{inspect params} #{uri}"
-    {:noreply, apply_action(socket, socket.assigns[:live_action], params)}
+
+    socket =
+      socket
+      |> assign(:current_uri, URI.parse(uri))
+      |> apply_action(socket.assigns[:live_action], params)
+
+    {:noreply, socket}
   end
 
   # Live actions
@@ -98,10 +104,19 @@ defmodule AppWeb.StoryLive.Index do
 
     story_ids = Enum.map(stories, &(&1.id))
 
+    current_uri = socket.assigns[:current_uri]
+    url =
+      if current_uri do
+        current_uri
+        |> URI.append_query(Plug.Conn.Query.encode(filter_params))
+        |> URI.to_string
+      end
+
     socket
     |> stream(:stories, stories, reset: true)
     |> assign(:exiting_story_ids, story_ids)
     |> assign(author: author, page: page, filter_params: filter_params, filter_form: to_form(filter_params))
+    |> push_event("set_page_url", %{url: url})
   end
 
   defp set_current_story(socket, story_id) do
