@@ -12,6 +12,7 @@ defmodule AppWeb.StoryLive.Index do
       socket
       |> set_stories(params, false)
       |> assign(story_categories: Stories.list_story_categories)
+      |> assign(font_size: 2)
 
     {:ok, socket}
   end
@@ -78,6 +79,17 @@ defmodule AppWeb.StoryLive.Index do
     {:noreply, set_stories(socket, filter_params)}
   end
 
+  @impl true
+  def handle_event("set_font_size", %{"size" => size}, socket) do
+    size = String.to_integer(size)
+    font_size = socket.assigns.font_size + size
+
+    font_size = if font_size < prose_font_size_min(), do: prose_font_size_min(), else: font_size
+    font_size = if font_size > prose_font_size_max(), do: prose_font_size_max(), else: font_size
+
+    {:noreply, assign(socket, :font_size, font_size)}
+  end
+
   defp set_stories(socket, params, stream \\ true) do
     Logger.debug "---set_stories #{inspect params}"
 
@@ -107,8 +119,7 @@ defmodule AppWeb.StoryLive.Index do
     current_uri = socket.assigns[:current_uri]
     url =
       if current_uri do
-        current_uri
-        |> URI.append_query(Plug.Conn.Query.encode(filter_params))
+        %{current_uri | query: Plug.Conn.Query.encode(filter_params)}
         |> URI.to_string
       end
 
@@ -154,5 +165,20 @@ defmodule AppWeb.StoryLive.Index do
     if assigns[:current_story] && assigns[:current_story].id == story.id do
       "bg-base-300"
     end
+  end
+
+  defp prose_font_size_min, do: 0
+  defp prose_font_size_max, do: 4
+
+  defp prose_font_size(font_size) do
+    class = %{
+      0 => "prose-sm",
+      1 => "prose-base",
+      2 => "prose-lg",
+      3 => "prose-xl",
+      4 => "prose-2xl"
+    }
+
+    class[font_size]
   end
 end

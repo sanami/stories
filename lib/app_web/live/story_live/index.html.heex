@@ -34,7 +34,16 @@
   </div>
 
   <div id="story_viewer" class="flex-1 w-7/12 p-4 overflow-y-auto" phx-hook="StoryViewer">
-    <article :if={assigns[:current_story]} class="prose leading-snug">
+    <div class="join absolute top-1 right-4">
+      <button class="join-item btn btn-xs" phx-click="set_font_size" phx-value-size={-1} disabled={@font_size == prose_font_size_min()}>
+        <.icon name="hero-minus" />
+      </button>
+      <button class="join-item btn btn-xs" phx-click="set_font_size" phx-value-size={1} disabled={@font_size == prose_font_size_max()}>
+        <.icon name="hero-plus" />
+      </button>
+    </div>
+
+    <article :if={assigns[:current_story]} class={["prose leading-snug", prose_font_size(@font_size)]}>
       <h4><%= @current_story.title %></h4>
       <%= raw @current_story.story_body %>
     </article>
