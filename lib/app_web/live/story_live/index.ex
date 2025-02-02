@@ -1,8 +1,9 @@
 defmodule AppWeb.StoryLive.Index do
   use AppWeb, :live_view
   import AppWeb.Components.Helpers
-  alias App.{Repo, Stories}
   require Logger
+
+  alias App.{Repo, Stories}
 
   @impl true
   def mount(params, session, socket) do

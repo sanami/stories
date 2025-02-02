@@ -2,8 +2,8 @@ defmodule App.Stories do
   import Ecto.Query, warn: false
   require Logger
 
-  alias App.Repo
   alias Ecto.Multi
+  alias App.Repo
   alias App.Stories.{Story, StoryAuthor, StoryCategory, StorySearch}
 
   def count(schema) do
@@ -148,7 +148,8 @@ defmodule App.Stories do
 
   def story_file(story) do
     folder = Application.get_env(:app, :story_storage, "priv/db/story_body")
-    File.mkdir_p!(folder)
+    File.mkdir_p(folder)
+
     Path.join(folder, "#{story.id}.html")
   end
 

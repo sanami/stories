@@ -45,7 +45,9 @@
 
     <article :if={assigns[:current_story]} class={["prose leading-snug", prose_font_size(@font_size)]}>
       <h4><%= @current_story.title %></h4>
-      <%= raw @current_story.story_body %>
+      <%= if @current_story.story_body != :not_found do %>
+        <%= raw @current_story.story_body %>
+      <% end %>
     </article>
   </div>
 </div>
