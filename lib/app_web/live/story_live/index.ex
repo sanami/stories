@@ -11,7 +11,7 @@ defmodule AppWeb.StoryLive.Index do
 
     socket =
       socket
-      |> set_stories(params, false)
+      |> set_stories(params)
       |> assign(story_categories: Stories.list_story_categories)
       |> assign(font_size: 2)
 
@@ -48,7 +48,7 @@ defmodule AppWeb.StoryLive.Index do
   # Events
   @impl true
   def handle_event("filter", params, socket) do
-    {:noreply, set_stories(socket, params)}
+    {:noreply, set_stories(socket, params, true)}
   end
 
   @impl true
@@ -91,7 +91,7 @@ defmodule AppWeb.StoryLive.Index do
     {:noreply, assign(socket, :font_size, font_size)}
   end
 
-  defp set_stories(socket, params, stream \\ true) do
+  defp set_stories(socket, params, reset_page \\ false) do
     Logger.debug "---set_stories #{inspect params}"
 
     is_favorites = socket.assigns[:is_favorites]
@@ -99,7 +99,9 @@ defmodule AppWeb.StoryLive.Index do
       params
       |> Map.take(~w[query author_id cat_ids rating page page_size sort sort_dir])
       |> Map.filter(fn {_key, val} -> val && val != "" && val != [] end)
-      |> Map.put_new("page", 1)
+      |> then(fn params ->
+        if reset_page, do: Map.put(params, "page", 1), else: Map.put_new(params, "page", 1)
+      end)
 
     page =
       Stories.list_stories(filter_params, is_favorites)
@@ -108,12 +110,8 @@ defmodule AppWeb.StoryLive.Index do
     author = if filter_params["author_id"], do: Stories.get_story_author!(filter_params["author_id"])
 
     stories =
-      if stream do
-        page.entries
-        |> Repo.preload([:story_author, :story_categories])
-      else
-        []
-      end
+      page.entries
+      |> Repo.preload([:story_author, :story_categories])
 
     story_ids = Enum.map(stories, &(&1.id))
 
