@@ -8,6 +8,7 @@ defmodule App.Stories.StoryAuthor do
     field :name, :string
     field :uid, :integer
     field :oid, :string
+    field :favorited_at, :utc_datetime
 
     has_many :stories, Stories.Story
 
@@ -17,7 +18,7 @@ defmodule App.Stories.StoryAuthor do
   @doc false
   def changeset(story_author, attrs) do
     story_author
-    |> cast(attrs, [:uid, :oid, :name])
+    |> cast(attrs, [:uid, :oid, :name, :favorited_at])
     |> validate_required([:uid, :oid, :name])
   end
 end
