@@ -8,7 +8,7 @@
           <span>
             <%= story.story_categories |> Enum.map(& &1.name) |> Enum.sort |> Enum.join(", ") %>
           </span>
-          <span :if={story.story_author}>
+          <span :if={story.story_author} class="cursor-pointer">
             <.link patch={~p"/story?author_id=#{story.story_author_id}"} class="">
               <%= story.story_author.name %>
             </.link>

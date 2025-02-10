@@ -212,6 +212,30 @@ defmodule App.Stories do
       select: ss.id
   end
 
+  # Helpers
   def favorite?(%Story{} = story), do: !!story.favorited_at
   def favorite?(%StoryAuthor{} = author), do: !!author.favorited_at
+
+  def author_options(cur_author \\ nil) do
+    res =
+      from(a in StoryAuthor,
+        select: {a.name, a.id},
+        where: not is_nil(a.favorited_at),
+        order_by: [asc: :name]
+      )
+      |> then(fn q ->
+        if cur_author do
+          where(q, [a], a.id != ^cur_author.id)
+        else
+          q
+        end
+      end)
+      |> Repo.all
+
+    if cur_author do
+      [{cur_author.name, cur_author.id} | res]
+    else
+      res
+    end
+  end
 end

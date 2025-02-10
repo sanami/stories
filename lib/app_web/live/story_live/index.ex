@@ -131,7 +131,8 @@ defmodule AppWeb.StoryLive.Index do
     socket
     |> stream(:stories, stories, reset: true)
     |> assign(:exiting_story_ids, story_ids)
-    |> assign(author: author, page: page, filter_params: filter_params, filter_form: to_form(filter_params))
+    |> assign(page: page, filter_params: filter_params, filter_form: to_form(filter_params))
+    |> assign(author: author, author_options: Stories.author_options(author))
     |> push_event("set_page_url", %{url: url})
   end
 
