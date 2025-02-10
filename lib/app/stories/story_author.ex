@@ -21,4 +21,8 @@ defmodule App.Stories.StoryAuthor do
     |> cast(attrs, [:uid, :oid, :name, :favorited_at])
     |> validate_required([:uid, :oid, :name])
   end
+
+  def set_favorite(story_author, favorited_at) do
+    change(story_author, favorited_at: favorited_at)
+  end
 end

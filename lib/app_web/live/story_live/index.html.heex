@@ -8,17 +8,22 @@
           <span>
             <%= story.story_categories |> Enum.map(& &1.name) |> Enum.sort |> Enum.join(", ") %>
           </span>
-          <.link :if={story.story_author} patch={~p"/story?author_id=#{story.story_author_id}"} class="">
-            <%= story.story_author.name %>
-          </.link>
+          <span :if={story.story_author}>
+            <.link patch={~p"/story?author_id=#{story.story_author_id}"} class="">
+              <%= story.story_author.name %>
+            </.link>
+            <.icon name={if Stories.favorite?(story.story_author), do: "hero-star-solid", else: "hero-star"}
+              phx-click="set_favorite_author" phx-value-id={story.story_author_id}
+            />
+          </span>
           <.story_details story={story} />
         </div>
 
         <div class="cursor-pointer prose" phx-click="set_current_story" phx-value-id={story.id}>
           <h4 class="mb-0">
             <%= story.title %>
-            <span phx-click="set_favorite" phx-value-id={story.id}>
-              <.icon name={if favorite?(story), do: "hero-star-solid", else: "hero-star"}/>
+            <span phx-click="set_favorite_story" phx-value-id={story.id}>
+              <.icon name={if Stories.favorite?(story), do: "hero-star-solid", else: "hero-star"}/>
             </span>
           </h4>
           <div class="max-h-32 overflow-y-auto">

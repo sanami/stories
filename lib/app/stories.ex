@@ -171,12 +171,15 @@ defmodule App.Stories do
     end
   end
 
-  def set_favorite(id) do
-    story = Repo.get!(Story, id)
-    favorited_at = if story.favorited_at, do: nil, else: DateTime.now!("Etc/UTC") |> DateTime.truncate(:second)
+  def set_favorite_story(id), do: set_favorite(Story, id)
+  def set_favorite_author(id), do: set_favorite(StoryAuthor, id)
 
-    story
-    |> Story.set_favorite(favorited_at)
+  def set_favorite(schema, id) when schema in [Story, StoryAuthor] do
+    obj = Repo.get!(schema, id)
+    favorited_at = if obj.favorited_at, do: nil, else: DateTime.now!("Etc/UTC") |> DateTime.truncate(:second)
+
+    obj
+    |> schema.set_favorite(favorited_at)
     |> Repo.update!
   end
 
@@ -208,4 +211,7 @@ defmodule App.Stories do
       where: fragment("story_search MATCH ?", ^query),
       select: ss.id
   end
+
+  def favorite?(%Story{} = story), do: !!story.favorited_at
+  def favorite?(%StoryAuthor{} = author), do: !!author.favorited_at
 end

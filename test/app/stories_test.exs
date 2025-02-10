@@ -86,6 +86,15 @@ defmodule App.StoriesTest do
     test "create_story_author/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Stories.create_story_author(@invalid_attrs)
     end
+
+    test "set_favorite_author" do
+      u1 = story_author_fixture()
+      refute Stories.favorite?(u1)
+
+      Stories.set_favorite_author(u1.id)
+      u11 = Repo.reload u1
+      assert Stories.favorite?(u11)
+    end
   end
 
   describe "stories" do
@@ -197,6 +206,15 @@ defmodule App.StoriesTest do
       Repo.delete s1
       assert Repo.all(Story) == []
       assert Repo.all(StorySearch) == []
+    end
+
+    test "set_favorite_story" do
+      s1 = story_fixture()
+      refute Stories.favorite?(s1)
+
+      Stories.set_favorite_story(s1.id)
+      s11 = Repo.reload s1
+      assert Stories.favorite?(s11)
     end
   end
 end

@@ -52,9 +52,9 @@ defmodule AppWeb.StoryLive.Index do
   end
 
   @impl true
-  def handle_event("set_favorite", %{"id" => story_id}, socket) do
+  def handle_event("set_favorite_story", %{"id" => story_id}, socket) do
     story =
-      Stories.set_favorite(story_id)
+      Stories.set_favorite_story(story_id)
       |> Repo.preload([:story_author, :story_categories])
 
     socket =
@@ -66,6 +66,12 @@ defmodule AppWeb.StoryLive.Index do
       end
 
     {:noreply, update_existing_story(socket, story)}
+  end
+
+  @impl true
+  def handle_event("set_favorite_author", %{"id" => author_id}, socket) do
+    Stories.set_favorite_author(author_id)
+    {:noreply, set_stories(socket, socket.assigns.filter_params)}
   end
 
   @impl true
@@ -156,10 +162,6 @@ defmodule AppWeb.StoryLive.Index do
   end
 
   # Helpers
-  defp favorite?(story) do
-    !!story.favorited_at
-  end
-
   defp current_story_style(assigns, story) do
     if assigns[:current_story] && assigns[:current_story].id == story.id do
       "bg-base-300"
