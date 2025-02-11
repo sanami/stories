@@ -4,7 +4,7 @@ defmodule AppWeb.Components.Helpers do
   embed_templates "helpers/*"
 
   attr :filter_form, :map, required: true
-  attr :author, :any
+  attr :author_options, :any
   attr :story_categories, :any
   attr :page, :any
   def story_filter_form(assigns)

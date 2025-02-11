@@ -38,7 +38,7 @@
     <.pagination page={@page} class="mb-4"/>
   </div>
 
-  <div id="story_viewer" class="flex-1 w-7/12 p-4 overflow-y-auto" phx-hook="StoryViewer">
+  <div id="story_viewer" class="flex-1 w-7/12 p-4 overflow-y-auto">
     <div class="join absolute top-1 right-4">
       <button class="join-item btn btn-xs" phx-click="set_font_size" phx-value-size={-1} disabled={@font_size == prose_font_size_min()}>
         <.icon name="hero-minus" />

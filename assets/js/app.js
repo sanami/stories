@@ -22,6 +22,7 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 import "./helpers"
+import "./events"
 import {Hooks} from "./hooks"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
@@ -44,11 +45,3 @@ liveSocket.connect()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
-
-window.addEventListener("phx:set_page_url", (ev) => {
-  pp("set_page_url", ev.detail)
-  const url = ev.detail.url
-  if (url) {
-    window.history.pushState("", "", url);
-  }
-})

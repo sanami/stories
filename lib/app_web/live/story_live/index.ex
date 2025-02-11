@@ -148,6 +148,7 @@ defmodule AppWeb.StoryLive.Index do
       |> assign(:current_story, story)
       |> update_existing_story(story)
       |> update_existing_story(prev_story)
+      |> push_event("reset_scroll", %{element: "#story_viewer"})
     else
       socket
     end

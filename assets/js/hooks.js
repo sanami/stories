@@ -1,8 +1,8 @@
 export const Hooks = {
-  StoryViewer: {
-    updated() {
-      // Reset scroll on story change
-      this.el.scrollTop = 0
-    }
-  }
+//  StoryViewer: {
+//    updated() {
+//      // Reset scroll on story change
+//      this.el.scrollTop = 0
+//    }
+//  }
 }
