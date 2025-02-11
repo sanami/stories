@@ -91,8 +91,7 @@ defmodule App.StoriesTest do
       u1 = story_author_fixture()
       refute Stories.favorite?(u1)
 
-      Stories.set_favorite_author(u1.id)
-      u11 = Repo.reload u1
+      u11 = Stories.set_favorite_author(u1.id)
       assert Stories.favorite?(u11)
     end
   end
@@ -212,9 +211,18 @@ defmodule App.StoriesTest do
       s1 = story_fixture()
       refute Stories.favorite?(s1)
 
-      Stories.set_favorite_story(s1.id)
-      s11 = Repo.reload s1
+      s11 = Stories.set_favorite_story(s1.id)
       assert Stories.favorite?(s11)
     end
+  end
+
+  test "author_options" do
+    a1 = story_author_fixture(favorited_at: DateTime.utc_now)
+    a2 = story_author_fixture(favorited_at: DateTime.utc_now)
+    _a3 = story_author_fixture(favorited_at: nil)
+
+    res = Stories.author_options(a2)
+    pp res
+    assert res == [{a2.name, a2.id}, {a1.name, a1.id}]
   end
 end
