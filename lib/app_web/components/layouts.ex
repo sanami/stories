@@ -9,7 +9,13 @@ defmodule AppWeb.Layouts do
   `use AppWeb, :live_view`.
   """
   use AppWeb, :html
-  import AppWeb.Components.Helpers
 
   embed_templates "layouts/*"
+  embed_templates "helpers/*"
+
+  attr :filter_form, :map, required: true
+  attr :author_options, :any
+  attr :story_categories, :any
+  attr :page, :any
+  def story_filter_form(assigns)
 end

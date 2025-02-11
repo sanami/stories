@@ -1,9 +1,10 @@
 defmodule AppWeb.StoryLive.Index do
   use AppWeb, :live_view
-  import AppWeb.Components.Helpers
   require Logger
 
   alias App.{Repo, Stories}
+
+  embed_templates "helpers/*"
 
   @impl true
   def mount(params, session, socket) do
@@ -121,19 +122,20 @@ defmodule AppWeb.StoryLive.Index do
 
     story_ids = Enum.map(stories, &(&1.id))
 
-    current_uri = socket.assigns[:current_uri]
-    url =
-      if current_uri do
-        %{current_uri | query: Plug.Conn.Query.encode(filter_params)}
-        |> URI.to_string
-      end
-
     socket
     |> stream(:stories, stories, reset: true)
     |> assign(:exiting_story_ids, story_ids)
     |> assign(page: page, filter_params: filter_params, filter_form: to_form(filter_params))
     |> assign(author: author, author_options: Stories.author_options(author))
-    |> push_event("set_page_url", %{url: url})
+    |> push_event("set_page_url", %{url: current_url(socket, filter_params)})
+  end
+
+  defp current_url(socket, params) do
+    current_uri = socket.assigns[:current_uri]
+    if current_uri do
+      %{current_uri | query: Plug.Conn.Query.encode(params)}
+      |> URI.to_string
+    end
   end
 
   defp set_current_story(socket, story_id) do
@@ -144,11 +146,14 @@ defmodule AppWeb.StoryLive.Index do
         Stories.get_story!(story_id)
         |> Repo.preload([:story_author, :story_categories])
 
+      filter_params = Map.merge(socket.assigns[:filter_params], %{"story_id" => story_id})
+
       socket
       |> assign(:current_story, story)
       |> update_existing_story(story)
       |> update_existing_story(prev_story)
       |> push_event("reset_scroll", %{element: "#story_viewer"})
+      |> push_event("set_page_url", %{url: current_url(socket, filter_params)})
     else
       socket
     end
@@ -184,4 +189,11 @@ defmodule AppWeb.StoryLive.Index do
 
     class[font_size]
   end
+
+  attr :page, :map, required: true
+  attr :rest, :global, default: %{class: "my-4"}
+  def pagination(assigns)
+
+  attr :story, :map
+  def story_details(assigns)
 end
