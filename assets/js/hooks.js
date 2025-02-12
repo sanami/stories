@@ -1,4 +1,4 @@
-export const Hooks = {
+export default {
 //  StoryViewer: {
 //    updated() {
 //      // Reset scroll on story change

@@ -23,7 +23,7 @@ import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 import "./helpers"
 import "./events"
-import {Hooks} from "./hooks"
+import Hooks from "./hooks"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
