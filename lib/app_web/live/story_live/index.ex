@@ -37,14 +37,14 @@ defmodule AppWeb.StoryLive.Index do
     socket
     |> assign(:page_title, "Рассказы")
     |> assign(is_favorites: false)
-    |> set_stories(params, reset_page: true)
+    |> set_stories(params)
   end
 
   defp apply_action(socket, :favorites, params) do
     socket
     |> assign(:page_title, "Избранное")
     |> assign(is_favorites: true)
-    |> set_stories(params, reset_page: true)
+    |> set_stories(params)
   end
 
   # Events
@@ -78,7 +78,7 @@ defmodule AppWeb.StoryLive.Index do
   @impl true
   def handle_event("set_favorite_author", %{"id" => author_id}, socket) do
     Stories.set_favorite_author(author_id)
-    {:noreply, set_stories(socket, socket.assigns.filter_params)}
+    {:noreply, set_stories(socket, socket.assigns.filter_params, reset_page: false, reset_scroll: false)}
   end
 
   @impl true
@@ -125,7 +125,7 @@ defmodule AppWeb.StoryLive.Index do
 
   # Internal
   defp set_stories(socket, params, opts \\ []) do
-    opts = Keyword.validate!(opts, reset_page: false)
+    opts = Keyword.validate!(opts, reset_page: false, reset_scroll: true)
     Logger.debug "---set_stories #{inspect opts} #{inspect params}"
 
     is_favorites = socket.assigns[:is_favorites]
@@ -156,6 +156,9 @@ defmodule AppWeb.StoryLive.Index do
     |> assign(:streamed_story_ids, story_ids)
     |> assign(page: page, filter_params: filter_params, filter_form: to_form(filter_params))
     |> assign(author_options: author_options)
+    |> then(fn socket ->
+      if opts[:reset_scroll], do: push_event(socket, "reset_scroll", %{element: "#stories_list"}), else: socket
+    end)
   end
 
   defp push_history(socket) do
