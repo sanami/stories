@@ -1,9 +1,9 @@
 <div class="flex h-screen">
-  <div id="stories_list" class="flex-0 w-5/12 px-4 bg-base-200 overflow-y-auto">
+  <div id="stories_list" class="flex-0 w-5/12 bg-base-200 overflow-y-auto">
     <.pagination page={@page} />
 
     <div id="stories" phx-update="stream">
-      <div :for={{dom_id, story} <- @streams.stories} id={dom_id} class={"mb-6 #{current_story_style(assigns, story)}"}>
+      <div :for={{dom_id, story} <- @streams.stories} id={dom_id} class={"mb-4 px-4 #{current_story_style(assigns, story)}"}>
         <div class="prose">
           <span>
             <%= story.story_categories |> Enum.map(& &1.name) |> Enum.sort |> Enum.join(", ") %>
@@ -26,8 +26,8 @@
               <.icon name={if Stories.favorite?(story), do: "hero-star-solid", else: "hero-star"}/>
             </span>
           </h4>
-          <div class="max-h-32 overflow-y-auto">
-            <p class="text-justify leading-tight mt-0 text-sm">
+          <div class="max-h-32 overflow-y-hidden">
+            <p class="text-justify leading-tight mt-0 mb-2 text-sm">
               <%= story.story_excerpt %>
             </p>
           </div>
