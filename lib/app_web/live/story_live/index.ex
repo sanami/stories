@@ -14,7 +14,6 @@ defmodule AppWeb.StoryLive.Index do
       socket
       |> assign(font_size: 2)
       |> assign(story_categories: Stories.list_story_categories)
-      |> assign(filter_params: %{})
 
     {:ok, socket}
   end
@@ -26,8 +25,9 @@ defmodule AppWeb.StoryLive.Index do
     socket =
       socket
       |> assign(:current_uri, URI.parse(uri))
+      |> assign(filter_params: %{})
       |> apply_action(socket.assigns[:live_action], params)
-      |> set_current_story(params["story_id"])
+      |> set_current_story(params["story_id"], false)
 
     {:noreply, socket}
   end
@@ -37,20 +37,25 @@ defmodule AppWeb.StoryLive.Index do
     socket
     |> assign(:page_title, "Рассказы")
     |> assign(is_favorites: false)
-    |> set_stories(params)
+    |> set_stories(params, true)
   end
 
   defp apply_action(socket, :favorites, params) do
     socket
     |> assign(:page_title, "Избранное")
     |> assign(is_favorites: true)
-    |> set_stories(params)
+    |> set_stories(params, true)
   end
 
   # Events
   @impl true
   def handle_event("filter", params, socket) do
-    {:noreply, set_stories(socket, params, true)}
+    socket =
+      socket
+      |> set_stories(params, true)
+      |> push_history()
+
+    {:noreply, socket}
   end
 
   @impl true
@@ -79,13 +84,23 @@ defmodule AppWeb.StoryLive.Index do
   @impl true
   def handle_event("set_current_story", %{"id" => story_id}, socket) do
     story_id = String.to_integer(story_id)
-    {:noreply, set_current_story(socket, story_id)}
+    socket =
+      socket
+      |> set_current_story(story_id)
+      |> push_history()
+
+    {:noreply, socket}
   end
 
   @impl true
   def handle_event("set_page", %{"page" => page}, socket) do
     filter_params = Map.merge(socket.assigns.filter_params, %{"page" => page})
-    {:noreply, set_stories(socket, filter_params)}
+    socket =
+      socket
+      |> set_stories(filter_params)
+      |> push_history()
+
+    {:noreply, socket}
   end
 
   @impl true
@@ -99,6 +114,7 @@ defmodule AppWeb.StoryLive.Index do
     {:noreply, assign(socket, :font_size, font_size)}
   end
 
+  # Internal
   defp set_stories(socket, params, reset_page \\ false) do
     Logger.debug "---set_stories #{inspect params}"
 
@@ -117,39 +133,38 @@ defmodule AppWeb.StoryLive.Index do
       |> Repo.paginate(filter_params)
 
     author = if filter_params["author_id"], do: Stories.get_story_author!(filter_params["author_id"])
+    author_options = Stories.author_options(author)
 
     stories =
       page.entries
       |> Repo.preload([:story_author, :story_categories])
 
-    story_ids = Enum.map(stories, &(&1.id))
+    story_ids = Enum.map(stories, &(&1.id)) |> MapSet.new
 
     socket
     |> stream(:stories, stories, reset: true)
     |> assign(:exiting_story_ids, story_ids)
     |> assign(page: page, filter_params: filter_params, filter_form: to_form(filter_params))
-    |> assign(author: author, author_options: Stories.author_options(author))
-    |> push_event("set_page_url", %{url: current_url(socket, filter_params)})
+    |> assign(author_options: author_options)
   end
 
-  defp current_url(socket, params) do
-    current_uri = socket.assigns[:current_uri]
-    if current_uri do
-      %{current_uri | query: Plug.Conn.Query.encode(params)}
-      |> URI.to_string
-    end
+  defp push_history(socket) do
+    current_url = %{socket.assigns.current_uri | query: Plug.Conn.Query.encode(socket.assigns.filter_params)} |> URI.to_string
+    push_event(socket, "set_page_url", %{url: current_url})
   end
 
-  defp set_current_story(socket, nil), do: socket
+  defp set_current_story(socket, story_id, render_story \\ true)
 
-  defp set_current_story(socket, story_id) when is_binary(story_id) do
-    set_current_story(socket, String.to_integer(story_id))
+  defp set_current_story(socket, nil, _render_story), do: socket
+
+  defp set_current_story(socket, story_id, render_story) when is_binary(story_id) do
+    set_current_story(socket, String.to_integer(story_id), render_story)
   rescue
     ArgumentError ->
       socket
   end
 
-  defp set_current_story(socket, story_id) do
+  defp set_current_story(socket, story_id, render_story) when is_integer(story_id) do
     prev_story = socket.assigns[:current_story]
 
     if !prev_story || prev_story.id != story_id do
@@ -159,13 +174,21 @@ defmodule AppWeb.StoryLive.Index do
 
       filter_params = Map.merge(socket.assigns.filter_params, %{"story_id" => story_id})
 
-      socket
-      |> assign(:current_story, story)
-      |> update_existing_story(story)
-      |> update_existing_story(prev_story)
-      |> push_event("reset_scroll", %{element: "#story_viewer"})
-      |> push_event("set_page_url", %{url: current_url(socket, filter_params)})
-      |> assign(:page_title, story.title)
+      socket =
+        socket
+        |> assign(:page_title, story.title)
+        |> assign(:current_story, story)
+        |> assign(:filter_params, filter_params)
+        |> push_event("reset_scroll", %{element: "#story_viewer"})
+
+      if render_story do
+        socket
+        |> update_existing_story(story)
+        |> update_existing_story(prev_story)
+      else
+        socket
+      end
+
     else
       socket
     end
@@ -173,7 +196,7 @@ defmodule AppWeb.StoryLive.Index do
 
   defp update_existing_story(socket, story) do
     story_ids = socket.assigns[:exiting_story_ids]
-    if story && story_ids && Enum.any?(story_ids, &(&1 == story.id)) do
+    if story && story_ids && MapSet.member?(story_ids, story.id) do
       stream_insert(socket, :stories, story)
     else
       socket

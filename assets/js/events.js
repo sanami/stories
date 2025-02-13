@@ -2,7 +2,7 @@ window.addEventListener("phx:set_page_url", (ev) => {
   pp("set_page_url", ev.detail)
   const url = ev.detail.url
   if (url) {
-    window.history.pushState("", "", url);
+    window.history.pushState({}, "", url);
   }
 })
 
