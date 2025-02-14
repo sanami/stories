@@ -24,8 +24,8 @@
       <div class="divider"></div>
     </div>
 
-    <div id="theme-toggle" phx-update="ignore">
-      <input type="checkbox" value="dark" class="toggle theme-controller"/>
+    <div>
+      <input type="checkbox" value="dark" checked={assigns[:theme_toggle]} class="toggle theme-controller" id="theme-toggle" phx-hook="ThemeToggle"/>
     </div>
   </aside>
 

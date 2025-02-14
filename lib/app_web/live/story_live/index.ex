@@ -7,12 +7,12 @@ defmodule AppWeb.StoryLive.Index do
   embed_templates "helpers/*"
 
   @impl true
-  def mount(params, session, socket) do
-    Logger.debug "---mount #{inspect params} #{inspect session}"
+  def mount(_params, session, socket) do
+    Logger.debug "---mount #{inspect session}"
 
     socket =
       socket
-      |> assign(font_size: 2)
+      |> assign(theme_toggle: session["theme_toggle"], font_size: 2)
       |> assign(story_categories: Stories.list_story_categories)
 
     {:ok, socket}

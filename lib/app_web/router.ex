@@ -18,6 +18,7 @@ defmodule AppWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    post "/session", SessionController, :set
 
     live "/story", StoryLive.Index, :index
     live "/story/favorites", StoryLive.Index, :favorites
