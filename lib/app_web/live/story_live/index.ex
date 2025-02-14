@@ -52,7 +52,7 @@ defmodule AppWeb.StoryLive.Index do
   def handle_event("filter", params, socket) do
     socket =
       socket
-      |> set_stories(params, reset_page: true)
+      |> set_stories(params)
       |> push_history()
 
     {:noreply, socket}
@@ -78,7 +78,7 @@ defmodule AppWeb.StoryLive.Index do
   @impl true
   def handle_event("set_favorite_author", %{"id" => author_id}, socket) do
     Stories.set_favorite_author(author_id)
-    {:noreply, set_stories(socket, socket.assigns.filter_params, reset_page: false, reset_scroll: false)}
+    {:noreply, set_stories(socket, %{}, reset_page: false, reset_scroll: false)}
   end
 
   @impl true
@@ -103,10 +103,9 @@ defmodule AppWeb.StoryLive.Index do
 
   @impl true
   def handle_event("set_page", %{"page" => page}, socket) do
-    filter_params = Map.merge(socket.assigns.filter_params, %{"page" => page})
     socket =
       socket
-      |> set_stories(filter_params)
+      |> set_stories(%{"page" => page}, reset_page: false)
       |> push_history()
 
     {:noreply, socket}
@@ -125,7 +124,7 @@ defmodule AppWeb.StoryLive.Index do
 
   # Internal
   defp set_stories(socket, params, opts \\ []) do
-    opts = Keyword.validate!(opts, reset_page: false, reset_scroll: true)
+    opts = Keyword.validate!(opts, reset_page: true, reset_scroll: true)
     Logger.debug "---set_stories #{inspect opts} #{inspect params}"
 
     is_favorites = socket.assigns[:is_favorites]
@@ -166,13 +165,13 @@ defmodule AppWeb.StoryLive.Index do
     push_event(socket, "set_page_url", %{url: current_url})
   end
 
-  defp set_current_story(socket, nil), do: socket
+  defp set_current_story(socket, nil), do: assign(socket, :current_story, nil)
 
   defp set_current_story(socket, story_id) when is_binary(story_id) do
     set_current_story(socket, String.to_integer(story_id))
   rescue
     ArgumentError ->
-      socket
+      set_current_story(socket, nil)
   end
 
   defp set_current_story(socket, story_id) when is_integer(story_id) do
@@ -225,7 +224,4 @@ defmodule AppWeb.StoryLive.Index do
   attr :page, :map, required: true
   attr :rest, :global, default: %{class: "my-4"}
   def pagination(assigns)
-
-  attr :story, :map
-  def story_details(assigns)
 end

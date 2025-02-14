@@ -5,18 +5,21 @@
     <div id="stories" phx-update="stream">
       <div :for={{dom_id, story} <- @streams.stories} id={dom_id} class={"mb-4 px-4 #{current_story_style(assigns, story)}"}>
         <div class="prose">
-          <span>
+          <span class="text-sm">
             <%= story.story_categories |> Enum.map(& &1.name) |> Enum.sort |> Enum.join(", ") %>
           </span>
           <span :if={story.story_author} class="cursor-pointer">
-            <.link patch={~p"/story?author_id=#{story.story_author_id}"} class="">
+            <.link phx-click="filter" phx-value-author_id={story.story_author_id}>
               <%= story.story_author.name %>
             </.link>
             <.icon name={if Stories.favorite?(story.story_author), do: "hero-star-solid", else: "hero-star"}
               phx-click="set_favorite_author" phx-value-id={story.story_author_id}
             />
           </span>
-          <.story_details story={story} />
+          <span class="mt-1 text-sm"><%= story.story_date %></span>
+          <span :if={story.rating} class="whitespace-nowrap  text-sm  w-min">
+            <span class="badge"><%= story.rating %></span> <%= story.rating_count %>
+          </span>
         </div>
 
         <div class="cursor-pointer prose" phx-click="set_current_story" phx-value-id={story.id}>
