@@ -5,33 +5,35 @@
     <div id="stories" phx-update="stream">
       <div :for={{dom_id, story} <- @streams.stories} id={dom_id} class={"mb-4 px-4 #{current_story_style(assigns, story)}"}>
         <div class="prose">
-          <span class="text-sm">
-            <%= story.story_categories |> Enum.map(& &1.name) |> Enum.sort |> Enum.join(", ") %>
-          </span>
+          <ul class="inline-flex space-x-2 list-none m-0 p-0 text-sm">
+            <li :for={cat <- story.story_categories} class="m-0 p-0">
+              <.link phx-click="filter" phx-value-cat_ids={cat.id} phx-value-reset={true}>{cat.name}</.link>
+            </li>
+          </ul>
           <span :if={story.story_author} class="cursor-pointer">
-            <.link phx-click="filter" phx-value-author_id={story.story_author_id}>
-              <%= story.story_author.name %>
+            <.link phx-click="filter" phx-value-author_id={story.story_author_id} phx-value-reset={true}>
+              <span class="font-semibold">{story.story_author.name}</span>
             </.link>
             <.icon name={if Stories.favorite?(story.story_author), do: "hero-star-solid", else: "hero-star"}
               phx-click="set_favorite_author" phx-value-id={story.story_author_id}
             />
           </span>
-          <span class="mt-1 text-sm"><%= story.story_date %></span>
+          <span class="mt-1 text-sm">{story.story_date}</span>
           <span :if={story.rating} class="whitespace-nowrap  text-sm  w-min">
-            <span class="badge"><%= story.rating %></span> <%= story.rating_count %>
+            <span class="badge">{story.rating}</span> {story.rating_count}
           </span>
         </div>
 
         <div class="cursor-pointer prose" phx-click="set_current_story" phx-value-id={story.id}>
           <h4 class="mb-0">
-            <%= story.title %>
+            {story.title}
             <span phx-click="set_favorite_story" phx-value-id={story.id}>
               <.icon name={if Stories.favorite?(story), do: "hero-star-solid", else: "hero-star"}/>
             </span>
           </h4>
           <div class="max-h-32 overflow-y-hidden">
             <p class="text-justify leading-tight mt-0 mb-2 text-sm">
-              <%= story.story_excerpt %>
+              {story.story_excerpt}
             </p>
           </div>
         </div>
@@ -52,9 +54,9 @@
     </div>
 
     <article :if={assigns[:current_story]} class={["prose leading-snug", prose_font_size(@font_size)]}>
-      <h4><%= @current_story.title %></h4>
+      <h4>{@current_story.title}</h4>
       <%= if @current_story.story_body != :not_found do %>
-        <%= raw @current_story.story_body %>
+        {raw @current_story.story_body}
       <% end %>
     </article>
   </div>

@@ -14,8 +14,8 @@ defmodule AppWeb.Layouts do
   embed_templates "helpers/*"
 
   attr :filter_form, :map, required: true
-  attr :author_options, :any
-  attr :story_categories, :any
+  attr :author_options, :list
+  attr :story_categories, :list
   attr :page, :any
   def story_filter_form(assigns)
 end

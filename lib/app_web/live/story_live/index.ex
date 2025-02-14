@@ -25,7 +25,7 @@ defmodule AppWeb.StoryLive.Index do
     socket =
       socket
       |> assign(:current_uri, URI.parse(uri))
-      |> assign(filter_params: %{})
+      |> reset_filters()
       |> apply_action(socket.assigns[:live_action], params)
       |> set_current_story(params["story_id"])
 
@@ -52,6 +52,9 @@ defmodule AppWeb.StoryLive.Index do
   def handle_event("filter", params, socket) do
     socket =
       socket
+      |> then(fn socket ->
+        if Map.has_key?(params, "reset"), do: reset_filters(socket), else: socket
+      end)
       |> set_stories(params)
       |> push_history()
 
@@ -123,9 +126,16 @@ defmodule AppWeb.StoryLive.Index do
   end
 
   # Internal
+  defp reset_filters(socket) do
+    filter_params =
+      (socket.assigns[:filter_params] || %{})
+      |> Map.take(["story_id"])
+
+    assign(socket, filter_params: filter_params)
+  end
+
   defp set_stories(socket, params, opts \\ []) do
     opts = Keyword.validate!(opts, reset_page: true, reset_scroll: true)
-    Logger.debug "---set_stories #{inspect opts} #{inspect params}"
 
     is_favorites = socket.assigns[:is_favorites]
     filter_params =
@@ -136,6 +146,8 @@ defmodule AppWeb.StoryLive.Index do
       |> then(fn params ->
         if opts[:reset_page], do: Map.drop(params, ["page"]), else: params
       end)
+
+    Logger.debug "---set_stories #{inspect opts} #{inspect filter_params}"
 
     page =
       Stories.list_stories(filter_params, is_favorites)

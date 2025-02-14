@@ -24,6 +24,6 @@
   <.input field={@filter_form[:query]} phx-debounce="300" label="Поиск" type="text"/>
 
   <:actions>
-    <.button type="reset" phx-click={JS.navigate(~p"/story")}>Reset</.button>
+    <.button type="button" phx-click="filter" phx-value-reset={true}>Reset</.button>
   </:actions>
 </.simple_form>
