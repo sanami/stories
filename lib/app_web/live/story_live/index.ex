@@ -25,7 +25,7 @@ defmodule AppWeb.StoryLive.Index do
     socket =
       socket
       |> assign(:current_uri, URI.parse(uri))
-      |> reset_filters()
+      |> full_reset_filters()
       |> apply_action(socket.assigns[:live_action], params)
       |> set_current_story(params["story_id"])
 
@@ -126,10 +126,12 @@ defmodule AppWeb.StoryLive.Index do
   end
 
   # Internal
+  defp full_reset_filters(socket), do: assign(socket, filter_params: %{})
+
   defp reset_filters(socket) do
     filter_params =
       (socket.assigns[:filter_params] || %{})
-      |> Map.take(["story_id"])
+      |> Map.take(~w[sort sort_dir story_id])
 
     assign(socket, filter_params: filter_params)
   end

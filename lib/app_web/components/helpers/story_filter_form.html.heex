@@ -11,7 +11,8 @@
   <div class="flex gap-1.5">
     <.input field={@filter_form[:sort]} type="select" options={["Дата": "story_date", "Рейтинг": "rating", "Название": "title" ]}/>
 
-    <!--<.input field={@filter_form[:sort_dir]} type="select" options={["ASC": "asc_nulls_last", "DESC": "desc_nulls_last" ]}/>-->
+    <.input field={@filter_form[:sort_dir]} type="select" options={["ASC": "asc_nulls_last", "DESC": "desc_nulls_last" ]}/>
+<!--
     <div class="grid place-items-center mt-4 ml-2">
       <label class="swap swap-rotate" id="sort_dir" phx-update="ignore">
         <input type="checkbox" name="sort_dir" value="asc_nulls_last"/>
@@ -19,6 +20,7 @@
         <.icon name="hero-bars-arrow-down" class="swap-off"/>
       </label>
     </div>
+-->
   </div>
 
   <.input field={@filter_form[:query]} phx-debounce="300" label="Поиск" type="text"/>
