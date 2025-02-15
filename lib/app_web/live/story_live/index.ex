@@ -12,7 +12,7 @@ defmodule AppWeb.StoryLive.Index do
 
     socket =
       socket
-      |> assign(theme_toggle: session["theme_toggle"], font_size: 2)
+      |> assign(theme_toggle: session["theme_toggle"], font_size: session["font_size"])
       |> assign(story_categories: Stories.list_story_categories)
 
     {:ok, socket}
@@ -117,12 +117,23 @@ defmodule AppWeb.StoryLive.Index do
   @impl true
   def handle_event("set_font_size", %{"size" => size}, socket) do
     size = String.to_integer(size)
-    font_size = socket.assigns.font_size + size
+    font_size =
+      if is_integer(socket.assigns.font_size) do
+        socket.assigns.font_size
+      else
+        prose_font_size_default()
+      end
 
+    font_size = font_size + size
     font_size = if font_size < prose_font_size_min(), do: prose_font_size_min(), else: font_size
     font_size = if font_size > prose_font_size_max(), do: prose_font_size_max(), else: font_size
 
-    {:noreply, assign(socket, :font_size, font_size)}
+    socket =
+      socket
+      |> assign(:font_size, font_size)
+      |> push_event("store_session", %{font_size: font_size})
+
+    {:noreply, socket}
   end
 
   # Internal
@@ -222,6 +233,7 @@ defmodule AppWeb.StoryLive.Index do
 
   defp prose_font_size_min, do: 0
   defp prose_font_size_max, do: 4
+  defp prose_font_size_default, do: 2
 
   defp prose_font_size(font_size) do
     class = %{
@@ -232,7 +244,7 @@ defmodule AppWeb.StoryLive.Index do
       4 => "prose-2xl"
     }
 
-    class[font_size]
+    class[font_size] || class[prose_font_size_default()]
   end
 
   attr :page, :map, required: true

@@ -1,11 +1,14 @@
 defmodule AppWeb.SessionController do
   use AppWeb, :controller
 
-  def set(conn, %{"theme_toggle" => theme_toggle}), do: store_session(conn, :theme_toggle, theme_toggle)
+  @allowed_session_keys ~w[theme_toggle font_size]
 
-  defp store_session(conn, key, value) do
-    conn
-    |> put_session(key, value)
+  def set(conn, params) do
+    params
+    |> Map.take(@allowed_session_keys)
+    |> Enum.reduce(conn, fn {k, v}, conn ->
+      put_session(conn, k, v)
+    end)
     |> json("OK")
   end
 end
