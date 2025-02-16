@@ -37,14 +37,14 @@ defmodule AppWeb.StoryLive.Index do
     socket
     |> assign(:page_title, "Рассказы")
     |> assign(is_favorites: false)
-    |> set_stories(params)
+    |> set_stories(params, reset_page: false)
   end
 
   defp apply_action(socket, :favorites, params) do
     socket
     |> assign(:page_title, "Избранное")
     |> assign(is_favorites: true)
-    |> set_stories(params)
+    |> set_stories(params, reset_page: false)
   end
 
   # Events
@@ -150,7 +150,6 @@ defmodule AppWeb.StoryLive.Index do
   defp set_stories(socket, params, opts \\ []) do
     opts = Keyword.validate!(opts, reset_page: true, reset_scroll: true)
 
-    is_favorites = socket.assigns[:is_favorites]
     filter_params =
       socket.assigns.filter_params
       |> Map.merge(params)
@@ -162,18 +161,16 @@ defmodule AppWeb.StoryLive.Index do
 
     Logger.debug "---set_stories #{inspect opts} #{inspect filter_params}"
 
-    page =
-      Stories.list_stories(filter_params, is_favorites)
-      |> Repo.paginate(filter_params)
-
-    author = if filter_params["author_id"], do: Stories.get_story_author!(filter_params["author_id"])
-    author_options = Stories.author_options(author)
+    page = Stories.list_stories(filter_params, is_favorites: socket.assigns.is_favorites)
 
     stories =
       page.entries
       |> Repo.preload([:story_author, :story_categories])
 
     story_ids = Enum.map(stories, &(&1.id)) |> MapSet.new
+
+    author = if filter_params["author_id"], do: Stories.get_story_author!(filter_params["author_id"])
+    author_options = Stories.author_options(author)
 
     socket
     |> stream(:stories, stories, reset: true)

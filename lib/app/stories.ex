@@ -63,7 +63,9 @@ defmodule App.Stories do
   end
 
   # Story
-  def list_stories(args \\ %{}, is_favorites \\ false) do
+  def list_stories(args \\ %{}, opts \\ []) do
+    opts = Keyword.validate!(opts, is_favorites: false)
+
     query = args["query"]
     author_id = args["author_id"]
     cat_ids = args["cat_ids"]
@@ -74,7 +76,7 @@ defmodule App.Stories do
     q = Story
     q = from s in q, join: c in assoc(s, :story_categories), where: c.is_visible == true
 
-    q = if is_favorites do
+    q = if opts[:is_favorites] do
       from s in q, where: not is_nil(s.favorited_at)
     else
       q
@@ -105,7 +107,7 @@ defmodule App.Stories do
       q
     end
 
-    q = if is_favorites do
+    q = if opts[:is_favorites] do
       order_by(q, desc: :favorited_at)
     else
       order_by(q, {^sort_dir, ^sort})
@@ -118,7 +120,7 @@ defmodule App.Stories do
       q
     end
 
-    q
+    Repo.paginate(q, page: args["page"], page_size: args["page_size"])
   end
 
   def get_story!(id) do
