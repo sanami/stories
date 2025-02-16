@@ -155,8 +155,8 @@ defmodule AppWeb.StoryLive.Index do
       |> Map.merge(params)
       |> Map.take(~w[query author_id cat_ids rating page page_size sort sort_dir story_id])
       |> Map.filter(fn {_key, val} -> val && val != "" && val != [] end)
-      |> then(fn params ->
-        if opts[:reset_page], do: Map.drop(params, ["page"]), else: params
+      |> then(fn filter_params ->
+        if opts[:reset_page] && !Enum.member?(params["_target"], "page"), do: Map.drop(filter_params, ["page"]), else: filter_params
       end)
 
     Logger.debug "---set_stories #{inspect opts} #{inspect filter_params}"

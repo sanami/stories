@@ -4,7 +4,7 @@
   <.input field={@filter_form[:cat_ids]} label="Категория" type="select" multiple options={Enum.map(@story_categories, & {"#{&1.name} [#{&1.id}]", &1.id})} style="height: 9em"/>
 
   <div class="flex gap-1.5">
-    <!--<.input field={@filter_form[:page]} type="number" min={1} max={@page.total_pages} phx-debounce="100" label="Страница"/>-->
+    <.input field={@filter_form[:page]} value={@filter_form[:page].value || 1} type="number" min={1} max={@page.total_pages} phx-debounce="100" label="Страница"/>
     <.input field={@filter_form[:page_size]} type="select" options={[10, 25, 50, 100]} label="Кол-во"/>
   </div>
 

@@ -105,8 +105,8 @@ defmodule App.StoriesTest do
       story_fixture(cat1, %{uid1: 1})
       story_fixture(cat1, %{uid1: 2})
 
-      res = Stories.list_stories |> Repo.all
-      assert length(res) == 2
+      res = Stories.list_stories
+      assert length(res.entries) == 2
     end
 
     test "get_story!/1 returns the story with given id" do
