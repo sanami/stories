@@ -155,6 +155,11 @@ defmodule App.Stories do
     Path.join(folder, "#{story.id}.html")
   end
 
+  def story_body_zip do
+    folder = Application.get_env(:app, :story_storage, "priv/db/story_body")
+    Path.join(folder, "story_body.zip")
+  end
+
   def save_story_body(story) do
     file = story_file(story)
     with :ok <- File.write(file, story.story_body) do
@@ -169,8 +174,25 @@ defmodule App.Stories do
       {:ok, story_body} ->
         %{story | story_body: story_body}
       {:error, _} ->
-        %{story | story_body: :not_found}
+        load_story_body_zip(story)
     end
+  end
+
+  def load_story_body_zip(story) do
+    zip_file = Unzip.LocalFile.open(story_body_zip())
+    {:ok, unzip} = Unzip.new(zip_file)
+
+    stream = Unzip.file_stream!(unzip, "#{story.id}.html")
+    story_body = Enum.into(stream, <<>>, &IO.iodata_to_binary/1)
+    story = %{story | story_body: story_body}
+
+    Unzip.LocalFile.close(zip_file)
+
+    story
+  rescue
+    ex ->
+      Logger.error(Exception.format(:error, ex, __STACKTRACE__))
+      %{story | story_body: :not_found}
   end
 
   def set_favorite_story(id), do: set_favorite(Story, id)

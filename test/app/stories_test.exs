@@ -162,18 +162,6 @@ defmodule App.StoriesTest do
       pp Enum.sort(cats11) == Enum.sort([cat1, cat2])
     end
 
-    test "load_story_body" do
-      s1 = Repo.reload(story_fixture())
-      pp s1
-      assert s1.story_body == nil
-
-      s2 = Stories.load_story_body(s1)
-      refute s2.story_body == nil
-
-      s3 = Stories.load_story_body(%Story{id: nil})
-      assert s3.story_body == :not_found
-    end
-
     test "story_fixture" do
       s1 = story_fixture(%{id: 11})
       s1 = Repo.reload(s1)
@@ -213,6 +201,32 @@ defmodule App.StoriesTest do
 
       s11 = Stories.set_favorite_story(s1.id)
       assert Stories.favorite?(s11)
+    end
+  end
+
+  describe "load_story_body" do
+    test "file" do
+      s1 = Repo.reload(story_fixture())
+      pp s1
+      refute s1.story_body
+
+      s11 = Stories.load_story_body(s1)
+      assert s11.story_body
+
+      s2 = Stories.load_story_body(%Story{id: nil})
+      assert s2.story_body == :not_found
+    end
+
+    test "zip" do
+      s1 = story_fixture(id: 1)
+      f1 = Stories.story_file(s1)
+      pp f1
+      File.rm!(f1)
+
+      File.cp! "test/support/fixtures/story_body.zip", Path.join(Path.dirname(f1), "story_body.zip")
+
+      s11 = Stories.load_story_body(s1)
+      assert s11.story_body == "story body zip\n"
     end
   end
 

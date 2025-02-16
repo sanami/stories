@@ -57,6 +57,7 @@ defmodule App.MixProject do
       {:scrivener_ecto, "~> 2.0"},
       {:faker, "~> 0.18"},
       {:dotenvy, "~> 1.0"},
+      {:unzip, "~> 0.12"},
     ]
   end
 
