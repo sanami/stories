@@ -1,0 +1,124 @@
+## "msgid"s in this file come from POT (.pot) files.
+###
+### Do not add, change, or remove "msgid"s manually here as
+### they're tied to the ones in the corresponding POT file
+### (with the same domain).
+###
+### Use "mix gettext.extract --merge" or "mix gettext.merge"
+### to merge POT files into PO files.
+msgid ""
+msgstr ""
+"Language: ru\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100 != 11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10||n%100>=20) ? 1 : 2);\n"
+
+#: lib/app_web/components/core_components.ex:160
+#, elixir-autogen, elixir-format
+msgid "Attempting to reconnect"
+msgstr ""
+
+#: lib/app_web/components/core_components.ex:151
+#, elixir-autogen, elixir-format
+msgid "Error!"
+msgstr ""
+
+#: lib/app_web/components/core_components.ex:172
+#, elixir-autogen, elixir-format
+msgid "Hang in there while we get back on track"
+msgstr ""
+
+#: lib/app_web/components/core_components.ex:167
+#, elixir-autogen, elixir-format
+msgid "Something went wrong!"
+msgstr ""
+
+#: lib/app_web/components/core_components.ex:150
+#, elixir-autogen, elixir-format
+msgid "Success!"
+msgstr ""
+
+#: lib/app_web/components/core_components.ex:155
+#, elixir-autogen, elixir-format
+msgid "We can't find the internet"
+msgstr ""
+
+#: lib/app_web/components/core_components.ex:76
+#: lib/app_web/components/core_components.ex:130
+#, elixir-autogen, elixir-format
+msgid "close"
+msgstr ""
+
+#: lib/app_web/components/layouts/app.html.heex:15
+#, elixir-autogen, elixir-format
+msgid "Favorites"
+msgstr "Избранное"
+
+#: lib/app_web/components/layouts/app.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Stories"
+msgstr "Рассказы"
+
+#: lib/app_web/components/helpers/story_filter_form.html.heex:2
+#, elixir-autogen, elixir-format
+msgid "Author"
+msgstr "Автор"
+
+#: lib/app_web/components/helpers/story_filter_form.html.heex:4
+#, elixir-autogen, elixir-format
+msgid "Category"
+msgstr "Категория"
+
+#: lib/app_web/components/helpers/story_filter_form.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Date"
+msgstr "Дата"
+
+#: lib/app_web/components/helpers/story_filter_form.html.heex:7
+#, elixir-autogen, elixir-format
+msgid "Page"
+msgstr "Страница"
+
+#: lib/app_web/components/helpers/story_filter_form.html.heex:8
+#, elixir-autogen, elixir-format
+msgid "Page Size"
+msgstr "Размер"
+
+#: lib/app_web/components/helpers/story_filter_form.html.heex:3
+#: lib/app_web/components/helpers/story_filter_form.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Rating"
+msgstr "Рейтинг"
+
+#: lib/app_web/components/helpers/story_filter_form.html.heex:29
+#, elixir-autogen, elixir-format
+msgid "Reset"
+msgstr "Сброс"
+
+#: lib/app_web/components/helpers/story_filter_form.html.heex:26
+#, elixir-autogen, elixir-format
+msgid "Search"
+msgstr "Поиск"
+
+#: lib/app_web/components/helpers/story_filter_form.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Title"
+msgstr "Заголовок"
+
+#: lib/app_web/components/helpers/story_filter_form.html.heex:14
+#, elixir-autogen, elixir-format
+msgid "asc"
+msgstr "возр"
+
+#: lib/app_web/components/helpers/story_filter_form.html.heex:14
+#, elixir-autogen, elixir-format
+msgid "desc"
+msgstr "убыв"
+
+#: lib/app_web/components/helpers/story_filter_form.html.heex:2
+#, elixir-autogen, elixir-format
+msgid "All"
+msgstr "Все"
+
+#: lib/app_web/components/helpers/story_filter_form.html.heex:3
+#, elixir-autogen, elixir-format
+msgid "Any"
+msgstr "Любой"

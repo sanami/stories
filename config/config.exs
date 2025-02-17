@@ -11,6 +11,9 @@ config :app,
   ecto_repos: [App.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+config :app, AppWeb.Gettext,
+  default_locale: "ru"
+
 # Configures the endpoint
 config :app, AppWeb.Endpoint,
   url: [host: "localhost"],

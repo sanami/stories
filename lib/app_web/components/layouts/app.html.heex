@@ -9,10 +9,10 @@
     <!-- Links -->
     <ul class="menu p-0">
       <li>
-        <.link class={"#{ if assigns[:live_action] == :index, do: "active" }"} patch={~p"/story"}>Рассказы</.link>
+        <.link class={"#{ if assigns[:live_action] == :index, do: "active" }"} patch={~p"/story"}>{gettext("Stories")}</.link>
       </li>
       <li>
-        <.link class={"#{ if assigns[:live_action] == :favorites, do: "active" }"} patch={~p"/story/favorites"}>Избранное</.link>
+        <.link class={"#{ if assigns[:live_action] == :favorites, do: "active" }"} patch={~p"/story/favorites"}>{gettext("Favorites")}</.link>
       </li>
     </ul>
 
