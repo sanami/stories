@@ -156,7 +156,7 @@ defmodule AppWeb.StoryLive.Index do
       |> Map.take(~w[query author_id cat_ids rating page page_size sort sort_dir story_id])
       |> Map.filter(fn {_key, val} -> val && val != "" && val != [] end)
       |> then(fn filter_params ->
-        if opts[:reset_page] && !Enum.member?(params["_target"], "page"), do: Map.drop(filter_params, ["page"]), else: filter_params
+        if opts[:reset_page] && !page_change_in_form?(params), do: Map.drop(filter_params, ["page"]), else: filter_params
       end)
 
     Logger.debug "---set_stories #{inspect opts} #{inspect filter_params}"
@@ -181,6 +181,10 @@ defmodule AppWeb.StoryLive.Index do
       if opts[:reset_scroll], do: push_event(socket, "reset_scroll", %{element: "#stories_list"}), else: socket
     end)
   end
+
+  defp page_change_in_form?(%{"_target" => target}) when is_list(target), do: Enum.member?(target, "page")
+  defp page_change_in_form?(%{"_target" => target}), do: target == "page"
+  defp page_change_in_form?(_params), do: false
 
   defp push_history(socket) do
     current_url = %{socket.assigns.current_uri | query: Plug.Conn.Query.encode(socket.assigns.filter_params)} |> URI.to_string
