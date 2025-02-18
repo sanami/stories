@@ -19,7 +19,9 @@ defmodule AppWeb.Router do
       pipe_through :browser
 
       get "/", PageController, :home
+
       post "/session", SessionController, :set
+      get "/session/set_locale", SessionController, :set_locale
 
       live "/story", StoryLive.Index, :index
       live "/story/favorites", StoryLive.Index, :favorites

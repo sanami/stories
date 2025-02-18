@@ -18,4 +18,8 @@ defmodule AppWeb.Layouts do
   attr :story_categories, :list
   attr :page, :any
   def story_filter_form(assigns)
+
+  defp current_locale?(locale) do
+    Gettext.get_locale(AppWeb.Gettext) == locale
+  end
 end

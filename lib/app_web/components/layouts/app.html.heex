@@ -27,9 +27,14 @@
     <div class="flex justify-between place-items-center">
       <input type="checkbox" value="dark" checked={assigns[:theme_toggle]} class="toggle theme-controller" id="theme-toggle" phx-hook="ThemeToggle" phx-update="ignore"/>
 
-      <div>
-        <button class="btn btn-xs btn-outline" phx-click="set_locale" phx-value-locale="en">en</button>
-        <button class="btn btn-xs btn-outline" phx-click="set_locale" phx-value-locale="ru">ru</button>
+      <div class="flex gap-1">
+        <button :for={locale <- ["en", "ru"]}
+          class="btn btn-xs btn-outline"
+          phx-click="set_locale" phx-value-locale={locale}
+          disabled={current_locale?(locale)}
+        >
+          {locale}
+        </button>
       </div>
     </div>
   </aside>

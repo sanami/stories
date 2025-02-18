@@ -1,13 +1,11 @@
 defmodule AppWeb.InitLocale do
-  # import Phoenix.Component
+  use Phoenix.VerifiedRoutes, endpoint: AppWeb.Endpoint, router: AppWeb.Router
   import Phoenix.LiveView
 
   require Logger
 
-  def on_mount(:default, params, session, socket) do
-    locale = (params["locale"] != "" && params["locale"])
-    locale = locale || session["locale"]
-
+  def on_mount(:default, _params, session, socket) do
+    locale = session["locale"]
     if is_binary(locale) do
       Logger.debug "---locale #{locale}"
       Gettext.put_locale(AppWeb.Gettext, locale)
@@ -26,8 +24,7 @@ defmodule AppWeb.InitLocale do
 
     socket =
       socket
-      |> push_event("store_session", %{locale: locale})
-      |> redirect(to: url)
+      |> redirect(to: ~p"/session/set_locale?#{[locale: locale, url: url]}")
 
     {:halt, socket}
   end

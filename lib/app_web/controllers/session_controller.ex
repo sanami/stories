@@ -11,4 +11,10 @@ defmodule AppWeb.SessionController do
     end)
     |> json("OK")
   end
+
+  def set_locale(conn, %{"locale" => locale, "url" => url}) do
+    conn
+    |> put_session("locale", locale)
+    |> redirect(to: url)
+  end
 end
