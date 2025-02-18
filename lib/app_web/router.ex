@@ -14,7 +14,7 @@ defmodule AppWeb.Router do
     plug :accepts, ["json"]
   end
 
-  live_session :default, on_mount: [AppWeb.InitAssigns] do
+  live_session :default, on_mount: [AppWeb.InitAssigns, AppWeb.InitLocale] do
     scope "/", AppWeb do
       pipe_through :browser
 

@@ -1,7 +1,7 @@
 defmodule AppWeb.SessionController do
   use AppWeb, :controller
 
-  @allowed_session_keys ~w[theme_toggle font_size]
+  @allowed_session_keys ~w[theme_toggle font_size locale]
 
   def set(conn, params) do
     params
