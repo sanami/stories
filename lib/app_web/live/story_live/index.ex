@@ -24,7 +24,6 @@ defmodule AppWeb.StoryLive.Index do
 
     socket =
       socket
-      |> assign(:current_uri, URI.parse(uri))
       |> full_reset_filters()
       |> apply_action(socket.assigns[:live_action], params)
       |> set_current_story(params["story_id"])
@@ -187,8 +186,12 @@ defmodule AppWeb.StoryLive.Index do
   defp page_change_in_form?(_params), do: false
 
   defp push_history(socket) do
-    current_url = %{socket.assigns.current_uri | query: Plug.Conn.Query.encode(socket.assigns.filter_params)} |> URI.to_string
-    push_event(socket, "set_page_url", %{url: current_url})
+    %{current_uri: current_uri, filter_params: filter_params} = socket.assigns
+    current_uri = %URI{current_uri | query: Plug.Conn.Query.encode(filter_params)}
+
+    socket
+    |> assign(current_uri: current_uri)
+    |> push_event("set_page_url", %{url: URI.to_string(current_uri)})
   end
 
   defp set_current_story(socket, nil), do: assign(socket, :current_story, nil)

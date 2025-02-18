@@ -14,14 +14,16 @@ defmodule AppWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", AppWeb do
-    pipe_through :browser
+  live_session :default, on_mount: [AppWeb.InitAssigns] do
+    scope "/", AppWeb do
+      pipe_through :browser
 
-    get "/", PageController, :home
-    post "/session", SessionController, :set
+      get "/", PageController, :home
+      post "/session", SessionController, :set
 
-    live "/story", StoryLive.Index, :index
-    live "/story/favorites", StoryLive.Index, :favorites
+      live "/story", StoryLive.Index, :index
+      live "/story/favorites", StoryLive.Index, :favorites
+    end
   end
 
   # Other scopes may use custom stacks.
