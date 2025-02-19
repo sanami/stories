@@ -73,7 +73,7 @@ defmodule App.Stories do
     sort = (args["sort"] || "story_date") |> String.to_existing_atom
     sort_dir = (args["sort_dir"] || "desc_nulls_last") |> String.to_existing_atom
 
-    q = Story
+    q = from(Story, distinct: true, order_by: {^sort_dir, ^sort})
     q = from s in q, join: c in assoc(s, :story_categories), where: c.is_visible == true
 
     q = if opts[:is_favorites] do
@@ -105,12 +105,6 @@ defmodule App.Stories do
       end
     else
       q
-    end
-
-    q = if opts[:is_favorites] do
-      order_by(q, desc: :favorited_at)
-    else
-      order_by(q, {^sort_dir, ^sort})
     end
 
     q = if query && String.length(query) > 2 do
