@@ -7,13 +7,13 @@
         <div class="prose">
           <ul class="inline-flex space-x-2 list-none m-0 p-0 text-sm">
             <li :for={cat <- story.story_categories} class="m-0 p-0">
-              <.link patch={~p"/story?#{[cat_ids: [cat.id]]}"}>
+              <.link patch={~p"/story?#{build_params(@filter_params, cat_ids: [cat.id])}"}>
                 {cat.name}
               </.link>
             </li>
           </ul>
           <span :if={story.story_author} class="cursor-pointer">
-            <.link patch={~p"/story?#{[author_id: story.story_author_id]}"}>
+            <.link patch={~p"/story?#{build_params(@filter_params, author_id: story.story_author_id)}"}>
               <span class="font-semibold">{story.story_author.name}</span>
             </.link>
             <.icon name={if Stories.favorite?(story.story_author), do: "hero-star-solid", else: "hero-star"}

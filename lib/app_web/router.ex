@@ -14,15 +14,15 @@ defmodule AppWeb.Router do
     plug :accepts, ["json"]
   end
 
-  live_session :default, on_mount: [AppWeb.InitAssigns, AppWeb.InitLocale] do
-    scope "/", AppWeb do
-      pipe_through :browser
+  scope "/", AppWeb do
+    pipe_through :browser
 
-      get "/", PageController, :home
+    get "/", PageController, :home
 
-      post "/session", SessionController, :set
-      get "/session/set_locale", SessionController, :set_locale
+    post "/session", SessionController, :set
+    get "/session/set_locale", SessionController, :set_locale
 
+    live_session :default, on_mount: [AppWeb.InitAssigns, AppWeb.InitLocale] do
       live "/story", StoryLive.Index, :index
       live "/story/favorites", StoryLive.Index, :favorites
     end

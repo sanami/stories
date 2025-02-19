@@ -141,7 +141,7 @@ defmodule AppWeb.StoryLive.Index do
   defp reset_filters(socket) do
     filter_params =
       (socket.assigns[:filter_params] || %{})
-      |> Map.take(~w[sort sort_dir story_id])
+      |> settings_params()
 
     assign(socket, filter_params: filter_params)
   end
@@ -228,7 +228,16 @@ defmodule AppWeb.StoryLive.Index do
     end
   end
 
-  # Helpers
+  # Settings
+  def settings_params(filter_params) do
+    Map.take(filter_params, ~w[page_size sort sort_dir story_id])
+  end
+
+  # Settings + navigate
+  def build_params(filter_params, params \\ %{}) do
+    Enum.into(params, settings_params(filter_params))
+  end
+
   defp current_story_style(assigns, story) do
     if assigns[:current_story] && assigns[:current_story].id == story.id do
       "bg-base-300"
