@@ -338,7 +338,7 @@ defmodule AppWeb.CoreComponents do
         <select
           id={@id}
           name={@name}
-          class="select select-bordered"
+          class="select select-bordered w-full"
           multiple={@multiple}
           {@rest}
         >

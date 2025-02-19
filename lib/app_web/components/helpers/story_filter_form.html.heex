@@ -3,15 +3,23 @@
   <.input field={@filter_form[:rating]} label={gettext("Rating")} type="select" options={1..9} prompt={gettext("Any")}/>
   <.input field={@filter_form[:cat_ids]} label={gettext("Category")} type="select" multiple options={Enum.map(@story_categories, & {"#{&1.name} [#{&1.id}]", &1.id})} style="height: 9em"/>
 
-  <div class="flex gap-1.5">
-    <.input field={@filter_form[:page]} value={@filter_form[:page].value || 1} type="number" min={1} max={@page.total_pages} phx-debounce="100" label={gettext("Page")}/>
-    <.input field={@filter_form[:page_size]} type="select" options={[10, 25, 50, 100]} label={gettext("Page Size")}/>
+  <div class="flex flex-row gap-1.5">
+    <div class="flex-1">
+      <.input field={@filter_form[:page]} value={@filter_form[:page].value || 1} type="number" min={1} max={@page.total_pages} phx-debounce="100" label={gettext("Page")}/>
+    </div>
+    <div class="flex-1">
+      <.input field={@filter_form[:page_size]} type="select" options={[10, 25, 50, 100]} label={gettext("Page Size")}/>
+    </div>
   </div>
 
-  <div class="flex gap-1.5">
-    <.input field={@filter_form[:sort]} type="select" options={[{gettext("Date"), "story_date"}, {gettext("Rating"), "rating"}, {gettext("Title"), "title"}]}/>
+  <div class="flex flex-row gap-1.5">
+    <div class="flex-1">
+      <.input field={@filter_form[:sort]} type="select" options={[{gettext("Date"), "story_date"}, {gettext("Rating"), "rating"}, {gettext("Title"), "title"}]}/>
+    </div>
 
-    <.input field={@filter_form[:sort_dir]} type="select" options={[{gettext("asc"), "asc_nulls_last"}, {gettext("desc"), "desc_nulls_last"}]}/>
+    <div class="flex-none">
+      <.input field={@filter_form[:sort_dir]} type="select" options={[{gettext("asc"), "asc_nulls_last"}, {gettext("desc"), "desc_nulls_last"}]}/>
+    </div>
 <!--
     <div class="grid place-items-center mt-4 ml-2">
       <label class="swap swap-rotate" id="sort_dir" phx-update="ignore">

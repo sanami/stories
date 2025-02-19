@@ -4,9 +4,9 @@
       <.icon name="hero-chevron-left-mini" />
     </button>
     <button class="join-item btn btn-sm -btn-disabled">
-      <%= @page.page_number %>
+      {@page.page_number}
       <span class="mx-0.25">/</span>
-      <%= @page.total_pages %>
+      {@page.total_pages}
     </button>
     <button class="join-item btn btn-sm" phx-click="set_page" disabled={@page.page_number == @page.total_pages} phx-value-page={@page.page_number + 1}>
       <.icon name="hero-chevron-right-mini" />
