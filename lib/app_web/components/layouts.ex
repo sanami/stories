@@ -9,6 +9,7 @@ defmodule AppWeb.Layouts do
   `use AppWeb, :live_view`.
   """
   use AppWeb, :html
+  import AppWeb.Helpers
 
   embed_templates "layouts/*"
   embed_templates "helpers/*"
@@ -18,8 +19,4 @@ defmodule AppWeb.Layouts do
   attr :story_categories, :list
   attr :page, :any
   def story_filter_form(assigns)
-
-  defp current_locale?(locale) do
-    Gettext.get_locale(AppWeb.Gettext) == locale
-  end
 end
