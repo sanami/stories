@@ -1,6 +1,6 @@
 <div class="flex h-screen">
   <div id="stories_list" class="flex-0 w-5/12 bg-base-200 overflow-y-auto">
-    <.pagination page={@page} />
+    <.pagination page={@page} id="top_pagination"/>
 
     <div id="stories" phx-update="stream">
       <div :for={{dom_id, story} <- @streams.stories} id={dom_id} class={"mb-4 px-4 #{current_story_style(assigns, story)}"}>

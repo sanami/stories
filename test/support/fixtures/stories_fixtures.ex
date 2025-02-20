@@ -55,9 +55,9 @@ defmodule App.StoriesFixtures do
         story_date: ~D[2023-07-04],
         story_excerpt: "story excerpt",
         story_body: "story body",
-        rating: 1,
-        rating_count: 2,
-        title: "story title",
+        rating: 5,
+        rating_count: 7,
+        title: seqs("story title [", "]"),
         uid: seqn()
       })
       |> App.Stories.create_story()

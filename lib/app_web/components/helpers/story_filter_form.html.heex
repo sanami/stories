@@ -34,6 +34,6 @@
   <.input field={@filter_form[:query]} phx-debounce="300" label={gettext("Search")} type="text"/>
 
   <:actions>
-    <.button type="button" phx-click="filter" phx-value-reset={true}>{gettext("Reset")}</.button>
+    <.button id="reset" type="button" phx-click="filter" phx-value-reset={true}>{gettext("Reset")}</.button>
   </:actions>
 </.simple_form>
