@@ -12,7 +12,7 @@ config :app,
   generators: [timestamp_type: :utc_datetime]
 
 config :app, AppWeb.Gettext,
-  default_locale: "ru"
+  default_locale: "en"
 
 # Configures the endpoint
 config :app, AppWeb.Endpoint,

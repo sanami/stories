@@ -48,11 +48,13 @@ msgid "close"
 msgstr ""
 
 #: lib/app_web/components/layouts/app.html.heex:15
+#: lib/app_web/live/story_live/index.ex:45
 #, elixir-autogen, elixir-format
 msgid "Favorites"
 msgstr "Избранное"
 
 #: lib/app_web/components/layouts/app.html.heex:12
+#: lib/app_web/live/story_live/index.ex:38
 #, elixir-autogen, elixir-format
 msgid "Stories"
 msgstr "Рассказы"
@@ -67,48 +69,48 @@ msgstr "Автор"
 msgid "Category"
 msgstr "Категория"
 
-#: lib/app_web/components/helpers/story_filter_form.html.heex:12
+#: lib/app_web/components/helpers/story_filter_form.html.heex:17
 #, elixir-autogen, elixir-format
 msgid "Date"
 msgstr "Дата"
 
-#: lib/app_web/components/helpers/story_filter_form.html.heex:7
+#: lib/app_web/components/helpers/story_filter_form.html.heex:8
 #, elixir-autogen, elixir-format
 msgid "Page"
 msgstr "Страница"
 
-#: lib/app_web/components/helpers/story_filter_form.html.heex:8
+#: lib/app_web/components/helpers/story_filter_form.html.heex:11
 #, elixir-autogen, elixir-format
 msgid "Page Size"
 msgstr "Размер"
 
 #: lib/app_web/components/helpers/story_filter_form.html.heex:3
-#: lib/app_web/components/helpers/story_filter_form.html.heex:12
+#: lib/app_web/components/helpers/story_filter_form.html.heex:17
 #, elixir-autogen, elixir-format
 msgid "Rating"
 msgstr "Рейтинг"
 
-#: lib/app_web/components/helpers/story_filter_form.html.heex:29
+#: lib/app_web/components/helpers/story_filter_form.html.heex:37
 #, elixir-autogen, elixir-format
 msgid "Reset"
 msgstr "Сброс"
 
-#: lib/app_web/components/helpers/story_filter_form.html.heex:26
+#: lib/app_web/components/helpers/story_filter_form.html.heex:34
 #, elixir-autogen, elixir-format
 msgid "Search"
 msgstr "Поиск"
 
-#: lib/app_web/components/helpers/story_filter_form.html.heex:12
+#: lib/app_web/components/helpers/story_filter_form.html.heex:17
 #, elixir-autogen, elixir-format
 msgid "Title"
 msgstr "Заголовок"
 
-#: lib/app_web/components/helpers/story_filter_form.html.heex:14
+#: lib/app_web/components/helpers/story_filter_form.html.heex:21
 #, elixir-autogen, elixir-format
 msgid "asc"
 msgstr "возр"
 
-#: lib/app_web/components/helpers/story_filter_form.html.heex:14
+#: lib/app_web/components/helpers/story_filter_form.html.heex:21
 #, elixir-autogen, elixir-format
 msgid "desc"
 msgstr "убыв"

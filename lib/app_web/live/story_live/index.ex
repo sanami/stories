@@ -35,14 +35,14 @@ defmodule AppWeb.StoryLive.Index do
   # Live actions
   defp apply_action(socket, :index, params) do
     socket
-    |> assign(:page_title, "Рассказы")
+    |> assign(:page_title, gettext("Stories"))
     |> assign(is_favorites: false)
     |> set_stories(params, reset_page: false)
   end
 
   defp apply_action(socket, :favorites, params) do
     socket
-    |> assign(:page_title, "Избранное")
+    |> assign(:page_title, gettext("Favorites"))
     |> assign(is_favorites: true)
     |> set_stories(params, reset_page: false)
   end
