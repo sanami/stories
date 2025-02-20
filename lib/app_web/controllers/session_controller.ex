@@ -9,7 +9,7 @@ defmodule AppWeb.SessionController do
     |> Enum.reduce(conn, fn {k, v}, conn ->
       put_session(conn, k, v)
     end)
-    |> json("OK")
+    |> text("OK")
   end
 
   def set_locale(conn, %{"locale" => locale, "url" => url}) do
