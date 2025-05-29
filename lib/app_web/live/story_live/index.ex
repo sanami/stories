@@ -178,7 +178,7 @@ defmodule AppWeb.StoryLive.Index do
     |> assign(page: page, filter_params: filter_params, filter_form: to_form(filter_params))
     |> assign(author_options: author_options)
     |> then(fn socket ->
-      if opts[:reset_scroll], do: push_event(socket, "reset_scroll", %{element: "#stories_list"}), else: socket
+      if opts[:reset_scroll], do: push_event(socket, "reset-scroll", %{element: "#stories_list"}), else: socket
     end)
   end
 
@@ -192,7 +192,7 @@ defmodule AppWeb.StoryLive.Index do
 
     socket
     |> assign(current_uri: current_uri)
-    |> push_event("set_page_url", %{url: URI.to_string(current_uri)})
+    |> push_event("set-page-url", %{url: URI.to_string(current_uri)})
   end
 
   defp set_current_story(socket, nil), do: assign(socket, :current_story, nil)

@@ -51,7 +51,7 @@ defmodule AppWeb.StoryLiveTest do
       |> element("#reset")
       |> render_click()
 
-      assert_push_event view, "set_page_url", %{}
+      assert_push_event view, "set-page-url", %{}
     end
 
     test "page", %{conn: conn} do
@@ -61,7 +61,7 @@ defmodule AppWeb.StoryLiveTest do
       |> element("#top_pagination .next_page")
       |> render_click()
 
-      assert_push_event view, "set_page_url", %{}
+      assert_push_event view, "set-page-url", %{}
       # open_browser(view)
 
       assert_raise ArgumentError, fn ->
