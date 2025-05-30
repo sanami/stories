@@ -7,8 +7,8 @@ defmodule App.Stories.LoaderTest do
   alias App.{Repo, Stories}
   alias App.Stories.{Loader, Story, StoryAuthor, StoryCategory}
 
-  @category1 "priv/db/import/story_categories.bsondump"
-  @authors1 "priv/db/import/story_authors.bsondump"
+  @category1 "priv/data/import/story_categories.bsondump"
+  @authors1 "priv/data/import/story_authors.bsondump"
   @stories1 "test/support/fixtures/stories.bsondump"
 
   if File.exists?(@category1) do

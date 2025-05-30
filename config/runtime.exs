@@ -1,7 +1,17 @@
 import Config
 import Dotenvy
 
-source!([Path.expand(".env"), System.get_env()])
+env_dir_prefix = Path.expand(".")
+
+source!([
+  Path.absname(".env", env_dir_prefix),
+  Path.absname(".#{config_env()}.env", env_dir_prefix),
+  Path.absname(".#{config_env()}.overrides.env", env_dir_prefix),
+  System.get_env()
+])
+
+config :app,
+  story_body_folder: env!("STORY_BODY_FOLDER", :string, "priv/data/story_body")
 
 config :app, App.Repo,
   log: env!("ECTO_LOG", :atom, :debug)
