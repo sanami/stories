@@ -150,8 +150,7 @@ defmodule App.Stories do
   end
 
   def story_body_zip do
-    folder = Application.fetch_env!(:app, :story_body_folder)
-    Path.join(folder, "story_body.zip")
+    Application.fetch_env!(:app, :story_body_zip)
   end
 
   def save_story_body(story) do

@@ -11,7 +11,8 @@ source!([
 ])
 
 config :app,
-  story_body_folder: env!("STORY_BODY_FOLDER", :string, "priv/data/story_body")
+  story_body_folder: env!("STORY_BODY_FOLDER", :string),
+  story_body_zip: env!("STORY_BODY_ZIP", :string, nil)
 
 config :app, App.Repo,
   log: env!("ECTO_LOG", :atom, :debug)

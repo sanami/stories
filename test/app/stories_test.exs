@@ -223,8 +223,6 @@ defmodule App.StoriesTest do
       pp f1
       File.rm!(f1)
 
-      File.cp! "test/support/fixtures/story_body.zip", Path.join(Path.dirname(f1), "story_body.zip")
-
       s11 = Stories.load_story_body(s1)
       assert s11.story_body == "story body zip\n"
     end
