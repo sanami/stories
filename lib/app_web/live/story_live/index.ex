@@ -215,7 +215,8 @@ defmodule AppWeb.StoryLive.Index do
       |> assign(:page_title, story.title)
       |> assign(:current_story, story)
       |> assign(:filter_params, filter_params)
-      |> push_event("reset_scroll", %{element: "#story_viewer"})
+      |> push_event("reset-scroll", %{element: "#story_viewer"})
+      |> push_event("scroll-into-view", %{element: "#stories-#{story_id}", if_needed: true})
     else
       socket
     end
